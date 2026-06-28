@@ -302,21 +302,73 @@ const QUIZ_BANK = [
       {t:"Into a city after dark",    v:{tone:.70,energy:.65,depth:.50,warmth:.40}},
       {t:"Somewhere that scares me",  v:{tone:.90,energy:.65,warmth:.25}},
     ]},
+  { q:"What's the weather in it?",
+    opts:[
+      {t:"Sunlit and warm",           v:{warmth:.80,tone:.25,energy:.45}},
+      {t:"Rain on the window",        v:{tone:.55,warmth:.50,energy:.30,depth:.55}},
+      {t:"A gathering storm",         v:{tone:.70,energy:.80}},
+      {t:"Cold and clear",            v:{tone:.55,warmth:.30,depth:.55}},
+    ]},
+  { q:"How big should it feel?",
+    opts:[
+      {t:"Small and intimate",        v:{warmth:.75,energy:.30,depth:.55}},
+      {t:"A real adventure",          v:{energy:.70,warmth:.55,tone:.40}},
+      {t:"Epic and sweeping",         v:{energy:.65,depth:.60,tone:.55}},
+      {t:"Tight and claustrophobic",  v:{tone:.80,energy:.60,warmth:.30}},
+    ]},
+  { q:"Pick a sound.",
+    opts:[
+      {t:"A warm acoustic score",     v:{warmth:.80,energy:.35,tone:.30}},
+      {t:"Pounding bass",             v:{energy:.90,tone:.60}},
+      {t:"Eerie silence",             v:{tone:.80,energy:.35,depth:.65,warmth:.30}},
+      {t:"A soaring orchestra",       v:{energy:.60,warmth:.60,depth:.55}},
+    ]},
+  { q:"Who's the hero tonight?",
+    opts:[
+      {t:"An underdog to root for",   v:{warmth:.80,energy:.55,tone:.35}},
+      {t:"A morally grey antihero",   v:{tone:.75,depth:.65,warmth:.35}},
+      {t:"An ordinary person in over their head", v:{depth:.55,tone:.60,warmth:.55,energy:.55}},
+      {t:"No hero — just chaos",      v:{tone:.70,energy:.70,depth:.55,warmth:.30}},
+    ]},
+  { q:"What do you want to do when it ends?",
+    opts:[
+      {t:"Sigh, satisfied",           v:{warmth:.80,tone:.30}},
+      {t:"Sit in stunned silence",    v:{tone:.75,depth:.80,warmth:.40}},
+      {t:"Cheer out loud",            v:{warmth:.75,energy:.80,tone:.30}},
+      {t:"Sleep with the lights on",  v:{tone:.90,energy:.65,warmth:.25}},
+    ]},
+  { q:"How much realism?",
+    opts:[
+      {t:"Grounded, true to life",    v:{depth:.65,warmth:.60,energy:.40}},
+      {t:"Heightened and stylish",    v:{tone:.60,energy:.65,depth:.50,warmth:.40}},
+      {t:"Full fantasy — elsewhere",  v:{depth:.60,energy:.60,warmth:.60,tone:.40}},
+      {t:"Dreamlike, unreal",         v:{depth:.80,tone:.55,warmth:.45}},
+    ]},
+  { q:"Choose a texture.",
+    opts:[
+      {t:"Soft and golden",           v:{warmth:.85,tone:.30,energy:.35}},
+      {t:"Neon and chrome",           v:{tone:.65,energy:.70,warmth:.35,depth:.50}},
+      {t:"Grain and shadow",          v:{tone:.80,depth:.60,warmth:.35}},
+      {t:"Bright and candy-colored",  v:{tone:.25,warmth:.70,energy:.65}},
+    ]},
 ];
 
 /* always asked (it sets the release-date window) */
 const ERA_Q = {
-  q:"How old-school are we going?", era:true,
+  era:true,
+  qs:["How old-school are we going?","Pick an era.","How far back should we reach?","What vintage tonight?"],
   opts:[
-    {t:"Whatever's fresh",   era:{gte:"2018-01-01"}},
-    {t:"Modern classics",    era:{gte:"2000-01-01",lte:"2017-12-31"}},
-    {t:"A proper throwback", era:{gte:"1970-01-01",lte:"1999-12-31"}},
-    {t:"No preference",      era:null},
+    {t:"Just released / fresh",        era:{gte:"2018-01-01"}},
+    {t:"Modern classics (2000s–10s)",  era:{gte:"2000-01-01",lte:"2017-12-31"}},
+    {t:"The '80s and '90s",            era:{gte:"1980-01-01",lte:"1999-12-31"}},
+    {t:"Old Hollywood (pre-1980)",     era:{gte:"1930-01-01",lte:"1979-12-31"}},
+    {t:"No preference",                era:null},
   ]};
 
 /* always asked: a runtime budget (sets the with_runtime window) */
 const RUNTIME_Q = {
-  q:"How much time do you have?", runtime:true,
+  runtime:true,
+  qs:["How much time do you have?","What's your runtime budget?","How long can you sit still?"],
   opts:[
     {t:"Short and sweet (~90 min)",   rt:{lte:105}},
     {t:"A standard couple of hours",  rt:{gte:95,lte:150}},
@@ -330,13 +382,22 @@ const VETO_GENRES = [
   [99,"Documentary"],[16,"Animation"],[28,"Action"],[878,"Sci-Fi"],
 ];
 const VETO_Q = { veto:true };
+const VETO_PROMPTS = [
+  "Anything you're not in the mood for? Cross it off.",
+  "Cross off anything you want to avoid tonight.",
+  "Strike anything that sounds wrong right now.",
+  "Not tonight? Cross it out.",
+];
 
 const QUIZ_PICK = 3; // mood questions drawn per session (era, runtime, veto are always added)
 
 /* ---------- Word association: single-word stimuli, drawn fresh each session ---------- */
 const CUE_POOL = ["RAIN","GLASS","DISTANCE","SMOKE","HOME","ENGINE","MIRROR","SALT",
   "NEON","STATIC","HARBOR","FEVER","VELVET","ASH","COMPASS","HUNGER","WIRE","BLOOM",
-  "GRAVITY","DUST","ECHO","SIGNAL","MARROW","CELLULOID","WINTER","APPETITE"];
+  "GRAVITY","DUST","ECHO","SIGNAL","MARROW","CELLULOID","WINTER","APPETITE",
+  "THRESHOLD","EMBER","TIDE","FRACTURE","IRON","MOTH","LANTERN","VOLTAGE","PETAL",
+  "COMET","ASPHALT","SILK","THUNDER","FROST","MARQUEE","CURTAIN","ORCHID","RIPTIDE",
+  "CINDER","HALO","DRIFT","TELEGRAM","FILAMENT","UNDERTOW"];
 const CUE_COUNT = 4;
 
 /* sluglines grouped by time of day, so the scene matches when you're playing */
@@ -388,6 +449,9 @@ function shuffle(arr){
   for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
   return a;
 }
+function pick(a){ return a[Math.floor(Math.random()*a.length)]; }
+/* clone a question template, choosing one of its rotating phrasings */
+function instedQ(t){ return Object.assign({}, t, { q: t.qs ? pick(t.qs) : t.q }); }
 
 /* word -> partial axis vector (only the axes the word strongly evokes).
    Unknown words contribute no vibe nudge, but are still sent to TMDB
@@ -493,7 +557,7 @@ const AXES = ["tone","energy","depth","warmth"];
    ============================================================ */
 let state;
 function reset(){
-  const quiz = shuffle(QUIZ_BANK).slice(0,QUIZ_PICK).concat([ERA_Q, RUNTIME_Q, VETO_Q]);
+  const quiz = shuffle(QUIZ_BANK).slice(0,QUIZ_PICK).concat([instedQ(ERA_Q), instedQ(RUNTIME_Q), VETO_Q]);
   const total = quiz.length + CUE_COUNT;
   state = {
     step:0,                                  // overall index through quiz+words
@@ -746,13 +810,13 @@ function renderVeto(qi){
   stage.innerHTML = `
     <section class="screen">
       ${scene(slug)}
-      <p class="action">Anything you're not in the mood for? Cross it off.</p>
+      <p class="action">${pick(VETO_PROMPTS)}</p>
       <div class="veto" id="veto"></div>
       <button class="btn" id="vgo">Continue</button>
       <button class="skip" id="vskip" type="button">no &mdash; anything goes</button>
     </section>`;
   const wrap=document.getElementById("veto");
-  VETO_GENRES.forEach(([id,name])=>{
+  shuffle(VETO_GENRES).forEach(([id,name])=>{
     const b=document.createElement("button");
     b.className="veto-chip"; b.type="button"; b.textContent=name;
     b.onclick=()=>{
