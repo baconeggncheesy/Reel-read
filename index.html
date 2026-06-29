@@ -413,34 +413,34 @@ function discoverURL(params){
   const p=new URLSearchParams(Object.assign({api_key:TMDB_KEY,include_adult:"false",language:"en-US"},params));
   return `${API}/discover/movie?${p}`;
 }
-/* the onboarding grid is built from several tuned "buckets" so it mixes
-   mainstream with classics, silents and world cinema — a casual viewer and a
-   cinephile tap visibly different things, which is what makes the read work. */
-const FOREIGN_LANGS=["ja","fr","it","ko","sv","de","ru","es","fa","zh","hi","pl","da","cn"];
+/* the onboarding grid is built from tuned "buckets" with fixed quotas, so it's
+   mostly recognizable films with classics, silents and world cinema mixed in as
+   an accent. mainstream/acclaimed/classic are pinned to English-language so the
+   dedicated foreign buckets are the only place world cinema enters — otherwise
+   TMDB's top-rated list (heavy on world cinema) double-counts it. */
+const FOREIGN_EUR=["fr","it","es","sv","de","ru","da","pl"];
+const FOREIGN_ASIA=["ja","ko","zh","hi","fa"];
 async function fetchGridFilms(){
   const rp=()=>String(1+Math.floor(Math.random()*2));
-  const langs=shuffle(FOREIGN_LANGS).slice(0,5);
-  const buckets=[
-    // recognizable modern crowd-pleasers
-    discoverURL({sort_by:"popularity.desc","vote_count.gte":"4000","primary_release_date.gte":"2001-01-01",page:rp()}),
-    // all-time acclaimed (prestige + a few mainstream giants)
-    discoverURL({sort_by:"vote_average.desc","vote_count.gte":"3500",page:rp()}),
-    discoverURL({sort_by:"vote_average.desc","vote_count.gte":"3500",page:"2"}),
+  const eur=shuffle(FOREIGN_EUR).slice(0,2);   // two European/Latin languages
+  const asia=shuffle(FOREIGN_ASIA).slice(0,1); // one Asian language
+  const specs=[
+    // recognizable modern crowd-pleasers (the anchors)
+    {take:10, url:discoverURL({with_original_language:"en",sort_by:"popularity.desc","vote_count.gte":"4000","primary_release_date.gte":"2001-01-01",page:rp()})},
+    // all-time acclaimed, English-language
+    {take:7,  url:discoverURL({with_original_language:"en",sort_by:"vote_average.desc","vote_count.gte":"3000",page:rp()})},
     // classic / mid-century Hollywood
-    discoverURL({sort_by:"vote_count.desc","primary_release_date.gte":"1930-01-01","primary_release_date.lte":"1969-12-31","vote_count.gte":"500",page:rp()}),
-    // the silent era
-    discoverURL({sort_by:"vote_count.desc","primary_release_date.lte":"1929-12-31","vote_count.gte":"60"}),
-    // world cinema across a few rotating languages
-    ...langs.map(l=>discoverURL({with_original_language:l,sort_by:"vote_count.desc","vote_count.gte":"300",page:rp()})),
+    {take:6,  url:discoverURL({with_original_language:"en",sort_by:"vote_count.desc","primary_release_date.gte":"1930-01-01","primary_release_date.lte":"1969-12-31","vote_count.gte":"500",page:rp()})},
+    // the silent era (Chaplin, Keaton, Metropolis, Nosferatu, Potemkin…)
+    {take:3,  url:discoverURL({sort_by:"vote_count.desc","primary_release_date.lte":"1929-12-31","vote_count.gte":"60"})},
+    // world cinema as an accent — a couple European, one Asian, rotating
+    ...eur.map(l=>({take:3, url:discoverURL({with_original_language:l,sort_by:"vote_count.desc","vote_count.gte":"300",page:rp()})})),
+    ...asia.map(l=>({take:3, url:discoverURL({with_original_language:l,sort_by:"vote_count.desc","vote_count.gte":"300",page:rp()})})),
   ];
-  const lists=await Promise.all(buckets.map(u=>fetchPool(u).catch(()=>[])));
-  // round-robin interleave so every bucket is represented before we trim
-  const seen=new Set(), out=[]; let idx=0, added=true;
-  while(out.length<44 && added){ added=false;
-    for(const list of lists){ const m=list[idx]; if(m&&!seen.has(m.id)){ seen.add(m.id); out.push(m); added=true; } }
-    idx++;
-  }
-  return shuffle(out.slice(0,36));
+  const lists=await Promise.all(specs.map(s=>fetchPool(s.url).catch(()=>[])));
+  const seen=new Set(), out=[];
+  lists.forEach((list,i)=>{ let n=0; for(const m of list){ if(n>=specs[i].take) break; if(!seen.has(m.id)){ seen.add(m.id); out.push(m); n++; } } });
+  return shuffle(out);
 }
 async function getRecommendations(id){
   const d=await fetchJSON(`${API}/movie/${id}/recommendations?api_key=${TMDB_KEY}&language=en-US&page=1`).catch(()=>({results:[]}));
