@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Reel Read — what to watch tonight</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<style>
+  /* ---------- Tokens: "Final Draft" ---------- */
+  :root{
+    --desk:#171410;          /* dark desk the page rests on */
+    --paper:#EBE4D2;         /* warm script paper */
+    --paper-edge:#E0D8C2;
+    --ink:#252118;           /* typewriter ink: a soft black */
+    --ink-soft:#5C5648;      /* faded ink: secondary */
+    --ink-faint:#8C8675;     /* tertiary */
+    --ribbon:#A23A2C;        /* the red half of a black/red ribbon: the only accent */
+    --line:rgba(37,33,24,.18);
+    --line-dot:rgba(37,33,24,.30);
+    --punch:#15120D;         /* a punched binding hole */
+    --mono:"Courier Prime","Courier New",ui-monospace,monospace;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:var(--mono);
+    color:var(--ink);
+    background:var(--desk);
+    min-height:100dvh;
+    display:flex;align-items:flex-start;justify-content:center;
+    padding:clamp(10px,3vw,30px);
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+
+  /* the page: a sheet of script paper on the desk */
+  .stage{
+    position:relative;width:100%;max-width:620px;
+    background:var(--paper);
+    background-image:linear-gradient(rgba(37,33,24,.012) .5px, transparent .5px);
+    background-size:100% 3px;
+    box-shadow:0 1px 0 rgba(255,255,255,.12) inset, 0 26px 60px -22px rgba(0,0,0,.75);
+    padding:clamp(30px,6vw,52px) clamp(24px,6vw,50px) clamp(40px,8vw,56px) clamp(46px,12vw,74px);
+    min-height:90vh;border-radius:1px;
+  }
+  /* celluloid grain over the paper */
+  .stage::after{
+    content:"";position:absolute;inset:0;pointer-events:none;opacity:.05;mix-blend-mode:multiply;border-radius:1px;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  /* three brass-brad binding holes down the left margin */
+  .stage::before{
+    content:"";position:absolute;left:18px;top:0;bottom:0;width:13px;
+    background-image:
+      radial-gradient(circle at center, var(--punch) 42%, rgba(0,0,0,.18) 46%, transparent 52%),
+      radial-gradient(circle at center, var(--punch) 42%, rgba(0,0,0,.18) 46%, transparent 52%),
+      radial-gradient(circle at center, var(--punch) 42%, rgba(0,0,0,.18) 46%, transparent 52%);
+    background-size:13px 13px;background-repeat:no-repeat;
+    background-position:center 17%,center 50%,center 83%;
+  }
+
+  .screen{position:relative;z-index:1;animation:fade .45s ease both}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  .caret{display:inline-block;width:.5ch;height:1em;background:var(--ribbon);margin-left:3px;vertical-align:-1px;animation:blink 1.05s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+
+  a:focus-visible,button:focus-visible{outline:1px solid var(--ribbon);outline-offset:2px}
+
+  /* ---------- Scene scaffolding ---------- */
+  .fadein{font-weight:700;text-transform:uppercase;letter-spacing:.05em;font-size:12.5px;color:var(--ink-soft);margin-bottom:22px}
+  .trans{font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:12.5px;color:var(--ink-soft);text-align:right;margin-bottom:18px}
+  .sceneline{display:flex;justify-content:space-between;align-items:baseline;gap:14px;margin-bottom:26px}
+  .slug{font-weight:700;text-transform:uppercase;letter-spacing:.01em;font-size:13.5px;line-height:1.4}
+  .pageno{font-size:13px;color:var(--ink-soft);white-space:nowrap}
+
+  .action{font-size:clamp(17px,4.6vw,20px);line-height:1.7;margin:0 0 24px;max-width:54ch}
+
+  /* ---------- Options as choosable lines ---------- */
+  .options{margin-top:4px;border-top:1px dashed var(--line-dot)}
+  .opt{
+    position:relative;display:block;width:100%;text-align:left;
+    background:transparent;border:none;border-bottom:1px dashed var(--line-dot);
+    font-family:inherit;color:var(--ink);font-size:16px;line-height:1.5;
+    padding:15px 12px 15px 30px;cursor:pointer;min-height:58px;
+    transition:background .15s ease,padding-left .15s ease;
+  }
+  .opt::before{content:"\203A";position:absolute;left:11px;top:15px;color:var(--ribbon);font-weight:700;opacity:0;transition:opacity .15s ease}
+  .opt:hover,.opt:focus-visible{background:rgba(37,33,24,.055);padding-left:34px;outline:none}
+  .opt:hover::before,.opt:focus-visible::before{opacity:1}
+
+  /* ---------- Word association ---------- */
+  .assoc{text-align:center}
+  .assoc .label{font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:20px}
+  .stimulus{font-weight:700;text-transform:uppercase;letter-spacing:.08em;font-size:clamp(34px,11vw,56px);line-height:1;margin-bottom:8px}
+  .assoc .hint{font-size:13px;color:var(--ink-faint);font-style:italic;margin-bottom:30px}
+  .wordin{display:flex;align-items:baseline;gap:10px;justify-content:center;max-width:430px;margin:0 auto}
+  .wordin .cue{color:var(--ribbon);font-weight:700;font-size:clamp(22px,6vw,28px);line-height:1}
+  .wordin input{
+    flex:0 1 300px;min-width:0;background:transparent;border:none;border-bottom:1px solid var(--ink-soft);
+    font-family:inherit;font-size:clamp(22px,6vw,28px);color:var(--ink);text-align:left;
+    padding:6px 2px;outline:none;caret-color:var(--ribbon);
+    transition:border-color .2s ease;
+  }
+  .wordin input::placeholder{color:var(--ink-faint)}
+  .wordin input:focus{border-color:var(--ribbon)}
+  .wgo{flex-shrink:0;background:none;border:none;color:var(--ink-soft);font-size:22px;line-height:1;cursor:pointer;padding:4px;transition:color .15s ease,transform .15s ease}
+  .wgo:hover{color:var(--ribbon);transform:translateX(2px)}
+  .echo{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ribbon);margin-top:20px;min-height:14px}
+  .skip{display:block;margin:24px auto 0;background:none;border:none;color:var(--ink-faint);cursor:pointer;font-family:inherit;font-size:12px;letter-spacing:.03em;padding:6px;text-decoration:underline;text-underline-offset:3px;transition:color .2s ease}
+  .skip:hover{color:var(--ink)}
+
+  /* ---------- Buttons ---------- */
+  .btn{
+    font-family:inherit;font-weight:700;text-transform:uppercase;letter-spacing:.12em;font-size:12px;
+    color:var(--paper);background:var(--ink);border:1px solid var(--ink);border-radius:1px;
+    padding:14px 26px;cursor:pointer;
+    transition:background .2s ease,color .2s ease,border-color .2s ease;
+  }
+  .btn:hover{background:transparent;color:var(--ink)}
+  .btn:active{opacity:.85}
+  .btn.ghost{background:transparent;color:var(--ink-soft);border-color:var(--line-dot)}
+  .btn.ghost:hover{color:var(--ink);border-color:var(--ink)}
+
+  /* ---------- Title page ---------- */
+  .title-page{text-align:center;min-height:78vh;display:flex;flex-direction:column}
+  .title-page .fadein{text-align:left}
+  .title-page .center{margin:auto 0;padding:6vh 0}
+  .title-page h1{font-weight:700;text-transform:uppercase;letter-spacing:.18em;font-size:clamp(34px,10vw,56px);line-height:1.12}
+  .title-page .by{margin-top:26px;font-size:13.5px;color:var(--ink-soft);letter-spacing:.02em}
+  .title-page .by em{display:block;margin-top:8px;font-style:italic;font-size:15px;color:var(--ink)}
+  .title-page .lede{margin:0 auto;max-width:48ch;font-size:14px;line-height:1.8;color:var(--ink-soft)}
+  .title-page .btn{align-self:center;margin-top:8px}
+
+  /* ---------- Loading ---------- */
+  .loading{text-align:center;padding-top:20vh}
+  .loading .now{font-weight:700;text-transform:uppercase;letter-spacing:.16em;font-size:15px;color:var(--ink)}
+
+  /* ---------- Result ---------- */
+  .feature{display:grid;grid-template-columns:118px 1fr;gap:24px;align-items:start;margin-top:10px}
+  @media(max-width:460px){.feature{grid-template-columns:94px 1fr;gap:18px}}
+  .poster{
+    position:relative;border-radius:1px;background:var(--paper-edge);aspect-ratio:2/3;
+    box-shadow:0 12px 26px -12px rgba(0,0,0,.6);transform:rotate(-1.6deg);
+    animation:place .7s ease both;
+  }
+  @keyframes place{from{opacity:0;transform:rotate(-7deg) translateY(10px)}to{opacity:1;transform:rotate(-1.6deg)}}
+  .poster img{width:100%;height:100%;object-fit:cover;display:block;border-radius:1px}
+  /* strips of tape holding the still to the page */
+  .poster::before,.poster::after{content:"";position:absolute;width:52px;height:19px;top:-9px;z-index:2;
+    background:rgba(162,58,44,.14);border:1px solid rgba(162,58,44,.22)}
+  .poster::before{left:-9px;transform:rotate(-30deg)}
+  .poster::after{right:-9px;transform:rotate(30deg)}
+  .poster.empty{display:flex;align-items:center;justify-content:center;color:var(--ink-faint);font-size:10px;letter-spacing:.16em;text-transform:uppercase;text-align:center;padding:8px;box-shadow:inset 0 0 0 1px var(--line)}
+
+  .feature h2{font-weight:700;text-transform:uppercase;letter-spacing:.03em;font-size:clamp(20px,5.4vw,27px);line-height:1.22}
+  .filmmeta{margin:12px 0 14px;font-size:13px;color:var(--ink-soft);line-height:1.7}
+  .filmmeta .star{color:var(--ribbon)}
+  .why{font-size:15px;line-height:1.7;margin-top:6px}
+  .why b{color:var(--ribbon);font-weight:700}
+  .why i{font-style:italic;color:var(--ink)}
+  .why .picked{display:block;margin-top:9px;font-size:11.5px;letter-spacing:.04em;color:var(--ink-soft);text-transform:uppercase}
+  .overview{font-size:13.5px;line-height:1.72;color:var(--ink-soft);margin-top:14px;max-width:60ch}
+
+  .alts{margin-top:38px}
+  .alts h3{font-weight:700;text-transform:uppercase;letter-spacing:.1em;font-size:12.5px;color:var(--ink-soft);margin-bottom:6px}
+  .alt-row{border-top:1px dashed var(--line-dot)}
+  .alt{display:flex;gap:14px;align-items:center;width:100%;text-align:left;background:transparent;border:none;border-bottom:1px dashed var(--line-dot);padding:12px 6px;cursor:pointer;transition:background .15s ease,padding-left .15s ease}
+  .alt:hover{background:rgba(37,33,24,.055);padding-left:12px}
+  .alt img{width:38px;height:57px;object-fit:cover;flex-shrink:0;background:var(--paper-edge);border-radius:1px;box-shadow:0 0 0 1px var(--line)}
+  .alt .at{font-weight:700;text-transform:uppercase;letter-spacing:.02em;font-size:14px;line-height:1.25}
+  .alt .ay{font-size:12px;color:var(--ink-soft);margin-top:3px}
+
+  .actions{display:flex;gap:12px;margin-top:40px;flex-wrap:wrap}
+  .actions + .actions{margin-top:12px}
+  .actions .btn{flex:1;min-width:150px;text-align:center}
+
+  /* genre veto chips */
+  .veto{display:flex;flex-wrap:wrap;gap:10px;margin:2px 0 6px}
+  .veto-chip{font-family:inherit;font-size:14px;color:var(--ink);background:transparent;border:1px solid var(--line-dot);border-radius:2px;padding:11px 15px;cursor:pointer;transition:border-color .15s ease,color .15s ease}
+  .veto-chip:hover{border-color:var(--ink)}
+  .veto-chip.on{color:var(--ribbon);border-color:var(--ribbon);text-decoration:line-through;text-decoration-color:var(--ribbon)}
+  .veto + .btn{margin-top:26px}
+
+  /* where-to-watch + trailer */
+  .extras{margin-top:18px;display:flex;flex-direction:column;gap:7px}
+  .extras-line{font-size:13px;color:var(--ink);text-decoration:none;letter-spacing:.01em}
+  a.extras-line:hover{color:var(--ribbon)}
+  .extras-line.dim{color:var(--ink-faint)}
+  .extras-load{font-size:12px;color:var(--ink-faint);letter-spacing:.04em}
+  .extras-attr{font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);margin-top:3px}
+
+  /* ---------- Error ---------- */
+  .err{text-align:center;padding-top:16vh}
+  .err h2{font-weight:700;text-transform:uppercase;letter-spacing:.07em;font-size:21px;margin-bottom:14px}
+  .err p{color:var(--ink-soft);line-height:1.7;max-width:48ch;margin:0 auto 24px;font-size:14px}
+
+  /* ---------- Footer ---------- */
+  .foot{margin-top:50px;padding-top:18px;border-top:1px dashed var(--line-dot);text-align:center}
+  .foot .end{font-weight:700;text-transform:uppercase;letter-spacing:.34em;font-size:12px;color:var(--ink-soft);margin-bottom:12px}
+  .foot p{font-size:10.5px;letter-spacing:.05em;color:var(--ink-faint);line-height:1.9}
+
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+  /* ===== v-next: onboarding, taste, reactions ===== */
+  .ob-head{font-family:var(--display,inherit)}
+  .lead{font-size:clamp(17px,4.6vw,20px);line-height:1.7;margin:0 0 8px;max-width:54ch}
+  .sub{color:var(--ink-soft);font-size:13.5px;line-height:1.6;margin:0 0 22px;max-width:52ch}
+
+  /* love-grid: tap films you like */
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:6px}
+  @media(min-width:520px){.grid{grid-template-columns:repeat(4,1fr)}}
+  .gtile{position:relative;padding:0;border:1px solid var(--line);background:var(--paper-edge);border-radius:2px;cursor:pointer;aspect-ratio:2/3;overflow:hidden;transition:transform .12s ease}
+  .gtile img{width:100%;height:100%;object-fit:cover;display:block}
+  .gtile:hover{transform:translateY(-2px)}
+  .gtile.on{outline:2px solid var(--ribbon);outline-offset:-2px}
+  .gtile.on::after{content:"\2713";position:absolute;top:6px;right:6px;width:22px;height:22px;border-radius:50%;background:var(--ribbon);color:var(--paper);font-size:13px;display:flex;align-items:center;justify-content:center;z-index:2}
+  .gtile.on::before{content:"";position:absolute;inset:0;background:rgba(162,58,44,.18);z-index:1}
+  .grid-bar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:22px;flex-wrap:wrap}
+  .grid-bar .count{font-size:12px;letter-spacing:.06em;color:var(--ink-soft)}
+
+  /* duels: this or that */
+  .duel{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px}
+  .duelcard{position:relative;padding:0;border:1px solid var(--line);background:var(--paper-edge);border-radius:2px;cursor:pointer;overflow:hidden;transition:transform .12s ease}
+  .duelcard:hover{transform:translateY(-3px)}
+  .duelcard img{width:100%;aspect-ratio:2/3;object-fit:cover;display:block}
+  .duelcard .dt{font-size:12px;line-height:1.3;padding:9px 10px;color:var(--ink);background:var(--paper)}
+  .duel-or{text-align:center;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-faint);font-size:12px;margin:18px 0 4px}
+
+  /* taste card / dossier */
+  .dossier{border:1px solid var(--line-2);border-radius:2px;padding:22px 20px;margin-top:4px}
+  .dossier .label{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:14px}
+  .dossier .read{font-size:clamp(18px,5vw,23px);line-height:1.45;margin-bottom:16px}
+  .dossier .read b{color:var(--ribbon)}
+  .dossier .rowlabel{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);margin:14px 0 6px}
+  .dossier .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .dossier .tag{font-size:12px;border:1px solid var(--line-2);border-radius:2px;padding:5px 10px;color:var(--ink)}
+
+  /* import */
+  .filebtn{position:relative;overflow:hidden}
+  .filebtn input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;font-size:0}
+  .import-note{font-size:11.5px;color:var(--ink-faint);line-height:1.6;margin-top:14px;max-width:48ch}
+  .import-status{font-size:12.5px;color:var(--ribbon);letter-spacing:.04em;margin-top:14px;min-height:16px}
+
+  /* home (returning) */
+  .home{text-align:center;min-height:70vh;display:flex;flex-direction:column}
+  .home .center{margin:auto 0;padding:6vh 0}
+  .home h1{font-family:var(--display,inherit);font-weight:700;text-transform:uppercase;letter-spacing:.16em;font-size:clamp(30px,9vw,52px);line-height:1.12}
+  .home .hi{color:var(--ink-soft);font-size:13px;letter-spacing:.04em;margin-bottom:24px}
+  .home .mini{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin-top:30px}
+  .home .mini button{background:none;border:none;color:var(--ink-faint);cursor:pointer;font-family:inherit;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;text-decoration:underline;text-underline-offset:3px;padding:4px}
+  .home .mini button:hover{color:var(--ribbon)}
+
+  /* warmer / colder reactions on the result */
+  .reactions{margin-top:24px}
+  .reactions .rlabel{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:10px}
+  .react-row{display:flex;flex-wrap:wrap;gap:9px}
+  .react{font-family:inherit;font-size:13px;color:var(--ink);background:transparent;border:1px solid var(--line-dot);border-radius:2px;padding:9px 13px;cursor:pointer;transition:border-color .15s ease,color .15s ease}
+  .react:hover{border-color:var(--ink)}
+  .react.love:hover{border-color:var(--ribbon);color:var(--ribbon)}
+
+  .obnote{font-size:11px;letter-spacing:.05em;color:var(--ink-faint);margin-top:26px;text-align:center}
+
+</style>
+</head>
+<body>
+  <main class="stage" id="stage"></main>
+<script>
+/* ============================================================
+   Reel Read — taste-aware build
+   ============================================================ */
+const TMDB_KEY = "c2015ecda624b83d2e3d19ead77c0a8c";
+const API = "https://api.themoviedb.org/3";
+const IMG = "https://image.tmdb.org/t/p/w500";
+const IMG_SM = "https://image.tmdb.org/t/p/w342";
+
+/* ---------- genre -> name + 4-axis signature ----------
+   tone 0 light..1 dark | energy 0 calm..1 intense
+   depth 0 escapist..1 cerebral | warmth 0 cool..1 warm */
+const GENRES = {
+  28:{name:"Action",sig:{tone:.55,energy:.90,depth:.30,warmth:.40}},
+  12:{name:"Adventure",sig:{tone:.35,energy:.70,depth:.35,warmth:.60}},
+  16:{name:"Animation",sig:{tone:.30,energy:.55,depth:.40,warmth:.80}},
+  35:{name:"Comedy",sig:{tone:.20,energy:.55,depth:.25,warmth:.65}},
+  80:{name:"Crime",sig:{tone:.75,energy:.60,depth:.60,warmth:.35}},
+  99:{name:"Documentary",sig:{tone:.50,energy:.30,depth:.90,warmth:.50}},
+  18:{name:"Drama",sig:{tone:.60,energy:.40,depth:.70,warmth:.70}},
+  10751:{name:"Family",sig:{tone:.15,energy:.50,depth:.25,warmth:.90}},
+  14:{name:"Fantasy",sig:{tone:.40,energy:.60,depth:.50,warmth:.70}},
+  36:{name:"History",sig:{tone:.60,energy:.40,depth:.75,warmth:.55}},
+  27:{name:"Horror",sig:{tone:.95,energy:.70,depth:.45,warmth:.20}},
+  10402:{name:"Music",sig:{tone:.35,energy:.60,depth:.40,warmth:.75}},
+  9648:{name:"Mystery",sig:{tone:.65,energy:.55,depth:.70,warmth:.40}},
+  10749:{name:"Romance",sig:{tone:.35,energy:.35,depth:.50,warmth:.90}},
+  878:{name:"Sci-Fi",sig:{tone:.55,energy:.65,depth:.75,warmth:.45}},
+  53:{name:"Thriller",sig:{tone:.80,energy:.75,depth:.60,warmth:.30}},
+  10752:{name:"War",sig:{tone:.85,energy:.70,depth:.70,warmth:.45}},
+  37:{name:"Western",sig:{tone:.65,energy:.60,depth:.50,warmth:.45}},
+};
+const AXES=["tone","energy","depth","warmth"];
+
+/* ---------- tonight's mood quiz (the fast layer) ---------- */
+const QUIZ_BANK = [
+  { q:"What does tonight need to feel like?", opts:[
+    {t:"Comfort and warmth",v:{warmth:.90,tone:.25,energy:.30}},
+    {t:"A jolt of adrenaline",v:{energy:.95,tone:.55}},
+    {t:"Beautiful and a little strange",v:{depth:.80,tone:.55,energy:.40}},
+    {t:"I want to be unsettled",v:{tone:.95,energy:.65,warmth:.25}} ]},
+  { q:"How much do you want to think?", opts:[
+    {t:"Switch my brain off",v:{depth:.15,energy:.60}},
+    {t:"Give me a real puzzle",v:{depth:.90}},
+    {t:"Just make me feel something",v:{warmth:.85,depth:.55}},
+    {t:"Surprise me",v:{},w:0} ]},
+  { q:"Pick a pace.", opts:[
+    {t:"Slow and immersive",v:{energy:.15}},
+    {t:"Steady, absorbing",v:{energy:.45}},
+    {t:"Fast and loud",v:{energy:.95}},
+    {t:"Builds to something",v:{energy:.60,tone:.65}} ]},
+  { q:"Which ending sounds right?", opts:[
+    {t:"Hopeful, a little teary",v:{warmth:.90,tone:.30}},
+    {t:"Cool and ambiguous",v:{warmth:.20,tone:.75,depth:.70}},
+    {t:"Triumphant and earned",v:{warmth:.80,energy:.65}},
+    {t:"Haunts me for days",v:{tone:.80,depth:.80,warmth:.35}} ]},
+  { q:"What should it leave on your skin?", opts:[
+    {t:"A warm glow",v:{warmth:.90,tone:.25}},
+    {t:"A racing pulse",v:{energy:.90,tone:.60}},
+    {t:"A lump in the throat",v:{warmth:.80,depth:.70,tone:.55}},
+    {t:"A cold chill",v:{tone:.88,warmth:.25,depth:.60}} ]},
+  { q:"How big should it feel?", opts:[
+    {t:"Small and intimate",v:{warmth:.75,energy:.30,depth:.55}},
+    {t:"A real adventure",v:{energy:.70,warmth:.55,tone:.40}},
+    {t:"Epic and sweeping",v:{energy:.65,depth:.60,tone:.55}},
+    {t:"Tight and claustrophobic",v:{tone:.80,energy:.60,warmth:.30}} ]},
+  { q:"Pick a sound.", opts:[
+    {t:"A warm acoustic score",v:{warmth:.80,energy:.35,tone:.30}},
+    {t:"Pounding bass",v:{energy:.90,tone:.60}},
+    {t:"Eerie silence",v:{tone:.80,energy:.35,depth:.65,warmth:.30}},
+    {t:"A soaring orchestra",v:{energy:.60,warmth:.60,depth:.55}} ]},
+  { q:"What do you want to do when it ends?", opts:[
+    {t:"Sigh, satisfied",v:{warmth:.80,tone:.30}},
+    {t:"Sit in stunned silence",v:{tone:.75,depth:.80,warmth:.40}},
+    {t:"Cheer out loud",v:{warmth:.75,energy:.80,tone:.30}},
+    {t:"Sleep with the lights on",v:{tone:.90,energy:.65,warmth:.25}} ]},
+];
+const ERA_Q = { era:true,
+  qs:["How old-school are we going?","Pick an era.","What vintage tonight?"],
+  opts:[
+    {t:"Just released / fresh",era:{gte:"2018-01-01"}},
+    {t:"Modern classics (2000s–10s)",era:{gte:"2000-01-01",lte:"2017-12-31"}},
+    {t:"The '80s and '90s",era:{gte:"1980-01-01",lte:"1999-12-31"}},
+    {t:"Old Hollywood (pre-1980)",era:{gte:"1930-01-01",lte:"1979-12-31"}},
+    {t:"No preference",era:null} ]};
+const RUNTIME_Q = { runtime:true,
+  qs:["How much time do you have?","What's your runtime budget?"],
+  opts:[
+    {t:"Short and sweet (~90 min)",rt:{lte:105}},
+    {t:"A standard couple of hours",rt:{gte:95,lte:150}},
+    {t:"I'm in it for an epic",rt:{gte:140}},
+    {t:"No limit",rt:null} ]};
+const VETO_GENRES=[[27,"Horror"],[10749,"Romance"],[35,"Comedy"],[10402,"Musicals"],[99,"Documentary"],[16,"Animation"],[28,"Action"],[878,"Sci-Fi"]];
+const VETO_Q={veto:true};
+const VETO_PROMPTS=["Anything you're not in the mood for? Cross it off.","Cross off anything to avoid tonight.","Not tonight? Cross it out."];
+const QUIZ_PICK=3;
+
+/* time-of-day sluglines */
+const SLUG_BUCKETS={
+  morning:["INT. A KITCHEN — MORNING","EXT. A BUS STOP — EARLY","INT. A COFFEE SHOP — OPENING","EXT. THE PARK — MORNING LIGHT","INT. A COMMUTER TRAIN — MORNING","EXT. A QUIET STREET — MORNING"],
+  afternoon:["INT. A LIBRARY — AFTERNOON","EXT. A ROOFTOP — MIDDAY SUN","INT. A DINER — LATE LUNCH","EXT. THE BEACH — LOW TIDE","INT. A BOOKSTORE — AFTERNOON","EXT. A FREEWAY — AFTERNOON HAZE"],
+  evening:["INT. YOUR APARTMENT — DUSK","EXT. A QUIET STREET — DUSK","EXT. A ROOFTOP — BLUE HOUR","INT. A BAR — EARLY EVENING","EXT. A PIER — SUNSET","INT. A CINEMA LOBBY — EARLY SHOW"],
+  night:["INT. AN ALL-NIGHT DINER — 3 A.M.","INT. A SLEEPLESS BEDROOM — 2 A.M.","INT. AN EMPTY THEATER — NIGHT","EXT. A NEON STREET — NIGHT","INT. BACK ROW OF THE CINEMA — NIGHT","INT. YOUR APARTMENT — LATE"],
+};
+const CLOSING_SLUGS=["INT. THE PROJECTION BOOTH — REEL CHANGE","EXT. THE BOX OFFICE — AFTER THE SHOW","INT. THE VIDEO STORE — CLOSING TIME"];
+function timeBucket(h){ if(h>=5&&h<12)return"morning"; if(h>=12&&h<17)return"afternoon"; if(h>=17&&h<21)return"evening"; return"night"; }
+function slugsForNow(n){ const b=SLUG_BUCKETS[timeBucket(new Date().getHours())]; let o=shuffle(b); while(o.length<n)o=o.concat(shuffle(b)); return o.slice(0,n); }
+
+/* ---------- helpers ---------- */
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+function instedQ(t){return Object.assign({},t,{q:t.qs?pick(t.qs):t.q});}
+function clamp01(x){return Math.max(0,Math.min(1,x));}
+function dist(a,b){let s=0;for(const k of AXES){const d=a[k]-b[k];s+=d*d;}return Math.sqrt(s);}
+function genreVec(ids){
+  const sigs=(ids||[]).map(id=>GENRES[id]&&GENRES[id].sig).filter(Boolean);
+  if(!sigs.length)return{tone:.5,energy:.5,depth:.5,warmth:.5};
+  const o={tone:0,energy:0,depth:0,warmth:0};
+  for(const s of sigs)for(const a of AXES)o[a]+=s[a];
+  for(const a of AXES)o[a]/=sigs.length; return o;
+}
+const yearOf=d=>(d||"").slice(0,4)||"—";
+const genreNames=ids=>(ids||[]).slice(0,3).map(id=>GENRES[id]&&GENRES[id].name).filter(Boolean);
+
+/* ---------- safe on-device storage (localStorage w/ memory fallback) ---------- */
+const Store=(()=>{
+  let mem={}, ok=false;
+  try{ localStorage.setItem("__rr","1"); localStorage.removeItem("__rr"); ok=true; }catch(_){ ok=false; }
+  return {
+    persistent:ok,
+    get(k){ try{ return ok?localStorage.getItem(k):(k in mem?mem[k]:null); }catch(_){ return mem[k]||null; } },
+    set(k,v){ try{ ok?localStorage.setItem(k,v):(mem[k]=v); }catch(_){ mem[k]=v; } },
+    del(k){ try{ ok?localStorage.removeItem(k):(delete mem[k]); }catch(_){ delete mem[k]; } },
+  };
+})();
+const PKEY="reelread.profile.v1";
+function blankProfile(){ return {seeds:[],dislikes:[],seen:[],axis:{tone:.5,energy:.5,depth:.5,warmth:.5},axisN:0,genres:{},created:Date.now()}; }
+function loadProfile(){ try{ const s=Store.get(PKEY); return s?JSON.parse(s):null; }catch(_){ return null; } }
+function saveProfile(){ try{ Store.set(PKEY,JSON.stringify(profile)); }catch(_){ } }
+function forgetProfile(){ Store.del(PKEY); profile=blankProfile(); }
+
+function learnLike(film,weight){
+  if(!film||!film.id)return;
+  if(!profile.seeds.find(s=>s.id===film.id))
+    profile.seeds.push({id:film.id,title:film.title,poster_path:film.poster_path,genre_ids:film.genre_ids||[],release_date:film.release_date});
+  const v=genreVec(film.genre_ids), w=weight||1;
+  for(const a of AXES) profile.axis[a]=clamp01((profile.axis[a]*profile.axisN + v[a]*w)/(profile.axisN+w));
+  profile.axisN+=w;
+  (film.genre_ids||[]).forEach(g=>profile.genres[g]=(profile.genres[g]||0)+w);
+}
+function learnDislike(film){ if(film&&film.id&&!profile.dislikes.includes(film.id)) profile.dislikes.push(film.id); }
+function markSeen(film){ if(film&&film.id&&!profile.seen.includes(film.id)) profile.seen.push(film.id); }
+
+/* ---------- TMDB ---------- */
+async function fetchJSON(url){ const r=await fetch(url); if(!r.ok) throw new Error("TMDB "+r.status); return r.json(); }
+async function fetchPool(url){ const d=await fetchJSON(url); return (d.results||[]).filter(m=>m.poster_path&&m.genre_ids); }
+
+const ONBOARD_GENRES=[18,35,28,878,27,10749,16,53,12,80];
+async function fetchGridFilms(){
+  const lists=await Promise.all(ONBOARD_GENRES.map(g=>{
+    const p=new URLSearchParams({api_key:TMDB_KEY,include_adult:"false",language:"en-US",sort_by:"vote_count.desc","vote_count.gte":"3000",with_genres:String(g),page:String(1+Math.floor(Math.random()*3))});
+    return fetchPool(`${API}/discover/movie?${p}`).catch(()=>[]);
+  }));
+  const seen=new Set(), out=[]; let idx=0, added=true;
+  while(out.length<36 && added){ added=false;
+    for(const list of lists){ const m=list[idx]; if(m&&!seen.has(m.id)){ seen.add(m.id); out.push(m); added=true; } }
+    idx++;
+  }
+  return shuffle(out).slice(0,30);
+}
+async function getRecommendations(id){
+  const d=await fetchJSON(`${API}/movie/${id}/recommendations?api_key=${TMDB_KEY}&language=en-US&page=1`).catch(()=>({results:[]}));
+  return (d.results||[]).filter(m=>m.poster_path&&m.genre_ids);
+}
+const detailCache=new Map();
+async function getRuntime(id){
+  if(detailCache.has(id)) return detailCache.get(id);
+  try{ const d=await fetchJSON(`${API}/movie/${id}?api_key=${TMDB_KEY}`); const rt=typeof d.runtime==="number"?d.runtime:null; detailCache.set(id,rt); return rt; }
+  catch(_){ detailCache.set(id,null); return null; }
+}
+async function fetchExtras(id){
+  const region=((navigator.language||"en-US").split("-")[1]||"US").toUpperCase();
+  const [pv,vd]=await Promise.all([
+    fetch(`${API}/movie/${id}/watch/providers?api_key=${TMDB_KEY}`).then(r=>r.ok?r.json():null).catch(()=>null),
+    fetch(`${API}/movie/${id}/videos?api_key=${TMDB_KEY}`).then(r=>r.ok?r.json():null).catch(()=>null),
+  ]);
+  let providers=[],link=null;
+  if(pv&&pv.results){const reg=pv.results[region]||pv.results["US"]||null; if(reg){link=reg.link||null; providers=(reg.flatrate||[]).map(p=>p.provider_name);}}
+  let trailer=null;
+  if(vd&&vd.results){const t=vd.results.find(v=>v.site==="YouTube"&&v.type==="Trailer"&&v.official)||vd.results.find(v=>v.site==="YouTube"&&v.type==="Trailer")||vd.results.find(v=>v.site==="YouTube"); if(t)trailer=`https://www.youtube.com/watch?v=${t.key}`;}
+  return {providers,link,trailer};
+}
+async function searchMovie(name,year){
+  const p=new URLSearchParams({api_key:TMDB_KEY,language:"en-US",query:name,include_adult:"false"});
+  if(year) p.set("year",String(year));
+  const d=await fetchJSON(`${API}/search/movie?${p}`).catch(()=>({results:[]}));
+  return (d.results||[]).find(m=>m.poster_path&&m.genre_ids)||(d.results||[])[0]||null;
+}
+
+/* ============================================================
+   Boot
+   ============================================================ */
+let profile, ob, state;
+const stage=document.getElementById("stage");
+
+function boot(){
+  profile=loadProfile();
+  if(profile && profile.seeds && profile.seeds.length){ renderHome(); }
+  else { profile=blankProfile(); renderWelcome(); }
+}
+
+/* ============================================================
+   Onboarding — the taste layer
+   ============================================================ */
+function renderWelcome(){
+  stage.innerHTML=`
+    <section class="screen title-page">
+      <div class="fadein">Fade in:</div>
+      <div class="center">
+        <h1>Reel Read</h1>
+        <p class="by">a screen test<em>let's find your taste</em></p>
+      </div>
+      <p class="lede">Before tonight's pick, a quick read on what you love. Two minutes, mostly tapping. Then it remembers — so it only gets sharper.</p>
+      <button class="btn" id="go">Begin the screen test</button>
+      <div class="mini" style="display:flex;gap:18px;justify-content:center;margin-top:26px">
+        <button id="imp" style="background:none;border:none;color:var(--ink-faint);text-decoration:underline;text-underline-offset:3px;cursor:pointer;font-family:inherit;font-size:12px;letter-spacing:.08em">or import a Letterboxd / IMDb / Trakt CSV</button>
+      </div>
+      <div class="foot"><p>Movie data &amp; posters from TMDB &mdash; not endorsed or certified by TMDB</p></div>
+    </section>`;
+  document.getElementById("go").onclick=startGrid;
+  document.getElementById("imp").onclick=renderImport;
+}
+
+async function startGrid(){
+  stage.innerHTML=`<section class="screen loading"><p class="now">Pulling the contact sheet<span class="caret"></span></p></section>`;
+  try{
+    const films=await fetchGridFilms();
+    if(!films.length) throw new Error("empty");
+    ob={films, picked:new Set(), duelPool:films.slice()};
+    renderGrid();
+  }catch(err){ renderError(err,startGrid); }
+}
+
+function renderGrid(){
+  stage.innerHTML=`
+    <section class="screen">
+      <div class="sceneline"><span class="slug">INT. THE CASTING OFFICE — DAY</span><span class="pageno">1.</span></div>
+      <p class="lead">Tap the ones you love.</p>
+      <p class="sub">Pick at least three. Don't overthink it — gut reaction.</p>
+      <div class="grid" id="grid"></div>
+      <div class="grid-bar">
+        <span class="count" id="count">0 chosen</span>
+        <button class="btn" id="gnext" disabled style="opacity:.5">Continue</button>
+      </div>
+    </section>`;
+  const grid=document.getElementById("grid");
+  ob.films.forEach(f=>{
+    const b=document.createElement("button");
+    b.className="gtile"; b.type="button";
+    b.innerHTML=`<img src="${IMG_SM+f.poster_path}" alt="${f.title}" loading="lazy">`;
+    b.onclick=()=>{
+      if(ob.picked.has(f.id)){ ob.picked.delete(f.id); b.classList.remove("on"); }
+      else { ob.picked.add(f.id); b.classList.add("on"); }
+      const n=ob.picked.size;
+      document.getElementById("count").textContent=n+" chosen";
+      const nx=document.getElementById("gnext");
+      nx.disabled=n<3; nx.style.opacity=n<3?".5":"1";
+    };
+    grid.appendChild(b);
+  });
+  document.getElementById("gnext").onclick=()=>{
+    ob.films.filter(f=>ob.picked.has(f.id)).forEach(f=>learnLike(f,1.2));
+    ob.duelRound=0; ob.duelUsed=new Set(); ob.duelMax=6;
+    renderDuel();
+  };
+}
+
+function leastCertainAxis(){ let best=AXES[0],bd=1; for(const a of AXES){const d=Math.abs(profile.axis[a]-.5); if(d<bd){bd=d;best=a;}} return best; }
+function nextDuelPair(){
+  const a=leastCertainAxis();
+  const avail=ob.duelPool.filter(m=>!ob.duelUsed.has(m.id));
+  if(avail.length<2) return null;
+  const sorted=avail.map(m=>({m,v:genreVec(m.genre_ids)[a]})).sort((x,y)=>x.v-y.v);
+  return shuffle([sorted[0].m, sorted[sorted.length-1].m]);
+}
+function renderDuel(){
+  if(ob.duelRound>=ob.duelMax){ return renderTasteCard(); }
+  const pair=nextDuelPair();
+  if(!pair){ return renderTasteCard(); }
+  stage.innerHTML=`
+    <section class="screen">
+      <div class="sceneline"><span class="slug">INT. THE SCREENING ROOM — CONTINUOUS</span><span class="pageno">${ob.duelRound+2}.</span></div>
+      <p class="lead">Which one pulls you?</p>
+      <p class="sub">Round ${ob.duelRound+1} of ${ob.duelMax}. Trust the gut.</p>
+      <div class="duel" id="duel"></div>
+    </section>`;
+  const wrap=document.getElementById("duel");
+  pair.forEach(f=>{
+    const b=document.createElement("button");
+    b.className="duelcard"; b.type="button";
+    b.innerHTML=`<img src="${IMG_SM+f.poster_path}" alt="${f.title}" loading="lazy"><span class="dt">${f.title} <span style="color:var(--ink-faint)">${yearOf(f.release_date)}</span></span>`;
+    b.onclick=()=>{
+      learnLike(f,0.8);
+      pair.forEach(x=>ob.duelUsed.add(x.id));
+      ob.duelRound++; renderDuel();
+    };
+    wrap.appendChild(b);
+  });
+}
+
+function tasteSummary(){
+  const ax=profile.axis, parts=[];
+  parts.push(ax.warmth>=.55?"<b>warm, character-driven</b>":ax.warmth<=.45?"<b>cool and detached</b>":"<b>even-handed</b>");
+  parts.push(ax.tone>=.58?"with a <b>darker</b> streak":ax.tone<=.42?"on the <b>brighter</b> side":"balanced in tone");
+  parts.push(ax.energy>=.58?"and plenty of <b>momentum</b>":ax.energy<=.42?"and a <b>slow burn</b>":"at a steady clip");
+  if(ax.depth>=.6) parts.push("— and you like something <b>to chew on</b>");
+  const top=Object.entries(profile.genres).sort((a,b)=>b[1]-a[1]).slice(0,4).map(([g])=>GENRES[g]&&GENRES[g].name).filter(Boolean);
+  return {line:`You lean ${parts.join(", ")}.`, comfort:top};
+}
+function renderTasteCard(){
+  saveProfile();
+  const s=tasteSummary();
+  stage.innerHTML=`
+    <section class="screen">
+      <div class="sceneline"><span class="slug">INT. THE EDITING BAY — LATER</span><span class="pageno">—</span></div>
+      <div class="dossier">
+        <div class="label">Character study &mdash; the audience</div>
+        <p class="read">${s.line}</p>
+        ${s.comfort.length?`<div class="rowlabel">Comfort territory</div><div class="tags">${s.comfort.map(t=>`<span class="tag">${t}</span>`).join("")}</div>`:""}
+      </div>
+      <p class="sub" style="margin-top:20px">Looks right? I'll use this every time — and refine it as you react to picks.</p>
+      <div class="actions">
+        <button class="btn" id="cont">Find me something tonight</button>
+        <button class="btn ghost" id="redo">Start the test over</button>
+      </div>
+      ${Store.persistent?"":`<p class="obnote">Heads up: this browser is blocking saved memory, so it won't persist between visits here. It will once the app is opened from a real web address.</p>`}
+    </section>`;
+  document.getElementById("cont").onclick=startSession;
+  document.getElementById("redo").onclick=()=>{ profile=blankProfile(); renderWelcome(); };
+}
+
+/* ---------- CSV import ---------- */
+function renderImport(){
+  stage.innerHTML=`
+    <section class="screen">
+      <div class="sceneline"><span class="slug">INT. THE ARCHIVE — DAY</span><span class="pageno">—</span></div>
+      <p class="lead">Import the films you love.</p>
+      <p class="sub">Export your data from Letterboxd (Settings &rarr; Data), IMDb, or Trakt, and drop the CSV here. I'll read your watchlist or ratings and learn from them.</p>
+      <div class="actions">
+        <button class="btn filebtn" id="fbtn">Choose a CSV file<input type="file" id="file" accept=".csv,text/csv"></button>
+        <button class="btn ghost" id="back">Back</button>
+      </div>
+      <div class="import-status" id="istatus"></div>
+      <p class="import-note">Your file is read on your device only — nothing is uploaded anywhere. Titles are matched to TMDB to learn their genres.</p>
+    </section>`;
+  document.getElementById("back").onclick=()=> (profile.seeds.length?renderHome():renderWelcome());
+  document.getElementById("file").onchange=e=>{
+    const f=e.target.files && e.target.files[0];
+    if(f) importCSV(f);
+  };
+}
+function parseCSV(text){
+  const rows=[]; let row=[],cur="",q=false;
+  for(let i=0;i<text.length;i++){ const c=text[i];
+    if(q){ if(c==='"'){ if(text[i+1]==='"'){cur+='"';i++;} else q=false; } else cur+=c; }
+    else { if(c==='"')q=true; else if(c===","){row.push(cur);cur="";} else if(c==="\n"){row.push(cur);rows.push(row);row=[];cur="";} else if(c==="\r"){} else cur+=c; }
+  }
+  if(cur.length||row.length){ row.push(cur); rows.push(row); }
+  return rows;
+}
+async function importCSV(file){
+  const st=document.getElementById("istatus");
+  st.textContent="Reading file…";
+  let text; try{ text=await file.text(); }catch(_){ st.textContent="Couldn't read that file."; return; }
+  const rows=parseCSV(text).filter(r=>r.length>1);
+  if(!rows.length){ st.textContent="That file looks empty."; return; }
+  const head=rows[0].map(h=>h.trim().toLowerCase());
+  const ti=head.findIndex(h=>h==="name"||h==="title"||h==="original title");
+  const yi=head.findIndex(h=>h==="year");
+  if(ti<0){ st.textContent="Couldn't find a title column in that CSV."; return; }
+  const entries=rows.slice(1).map(r=>({name:(r[ti]||"").trim(), year:yi>=0?(r[yi]||"").trim():""})).filter(e=>e.name).slice(0,40);
+  if(!entries.length){ st.textContent="No film titles found."; return; }
+  let n=0;
+  for(let i=0;i<entries.length;i++){
+    st.textContent=`Matching ${i+1} of ${entries.length}…`;
+    const m=await searchMovie(entries[i].name, entries[i].year);
+    if(m){ learnLike(m,1.0); n++; }
+  }
+  saveProfile();
+  st.textContent=`Learned from ${n} films. Building your taste…`;
+  setTimeout(()=> n? renderHome() : (st.textContent="Couldn't match any titles — try the screen test instead."), 900);
+}
+
+/* ============================================================
+   Home (returning visits)
+   ============================================================ */
+function renderHome(){
+  const n=profile.seeds.length;
+  stage.innerHTML=`
+    <section class="screen home">
+      <div class="fadein">Fade in:</div>
+      <div class="center">
+        <p class="hi">Welcome back &middot; ${n} film${n===1?"":"s"} in your taste</p>
+        <h1>Reel Read</h1>
+        <div class="actions" style="justify-content:center;margin-top:34px">
+          <button class="btn" id="find">Find tonight's film</button>
+        </div>
+        <div class="mini">
+          <button id="refine">Refine my taste</button>
+          <button id="imp">Import more</button>
+          <button id="forget">Forget me</button>
+        </div>
+      </div>
+      <div class="foot"><p>Movie data &amp; posters from TMDB &mdash; not endorsed or certified by TMDB</p></div>
+    </section>`;
+  document.getElementById("find").onclick=startSession;
+  document.getElementById("imp").onclick=renderImport;
+  document.getElementById("refine").onclick=startGrid;
+  document.getElementById("forget").onclick=()=>{
+    if(confirm("Forget everything I've learned about your taste? This can't be undone.")){ forgetProfile(); renderWelcome(); }
+  };
+}
+
+/* ============================================================
+   Tonight's session (mood quiz -> taste-seeded engine)
+   ============================================================ */
+function startSession(){
+  const quiz=shuffle(QUIZ_BANK).slice(0,QUIZ_PICK).concat([instedQ(ERA_Q),instedQ(RUNTIME_Q),VETO_Q]);
+  const total=quiz.length;
+  state={ step:0, sums:{tone:0,energy:0,depth:0,warmth:0}, wts:{tone:0,energy:0,depth:0,warmth:0},
+    quiz, total, slugs:slugsForNow(total), closing:pick(CLOSING_SLUGS),
+    era:null, runtime:null, veto:[], uv:null, candidates:[], freq:new Map(), src:new Map(), sessionSeen:new Set() };
+  nextStep();
+}
+function applyVec(v,weight){ const w=weight==null?1:weight; for(const a of AXES){ if(v&&v[a]!=null){ state.sums[a]+=v[a]*w; state.wts[a]+=w; } } }
+function userVec(){ const o={}; for(const a of AXES) o[a]=state.wts[a]>0?state.sums[a]/state.wts[a]:0.5; return o; }
+function scene(slug){ return `<div class="sceneline"><span class="slug">${slug}</span><span class="pageno">${state.step+1}.</span></div>`; }
+function nextStep(){ if(state.step<state.quiz.length) return renderQuestion(state.step); return runLoading(); }
+
+function renderQuestion(qi){
+  const Q=state.quiz[qi];
+  if(Q.veto) return renderVeto(qi);
+  const slug=state.slugs[state.step];
+  stage.innerHTML=`
+    <section class="screen">
+      ${state.step===0?'<div class="fadein">Fade in:</div>':''}
+      ${scene(slug)}
+      <p class="action">${Q.q}</p>
+      <div class="options" id="opts"></div>
+    </section>`;
+  const wrap=document.getElementById("opts");
+  shuffle(Q.opts).forEach(o=>{
+    const b=document.createElement("button"); b.className="opt"; b.type="button"; b.textContent=o.t;
+    b.onclick=()=>{ if(Q.era)state.era=o.era; else if(Q.runtime)state.runtime=o.rt; else applyVec(o.v,o.w); state.step++; nextStep(); };
+    wrap.appendChild(b);
+  });
+}
+function renderVeto(qi){
+  const slug=state.slugs[state.step]; const chosen=new Set();
+  stage.innerHTML=`
+    <section class="screen">
+      ${scene(slug)}
+      <p class="action">${pick(VETO_PROMPTS)}</p>
+      <div class="veto" id="veto"></div>
+      <button class="btn" id="vgo">Continue</button>
+      <button class="skip" id="vskip" type="button">no &mdash; anything goes</button>
+    </section>`;
+  const wrap=document.getElementById("veto");
+  shuffle(VETO_GENRES).forEach(([id,name])=>{
+    const b=document.createElement("button"); b.className="veto-chip"; b.type="button"; b.textContent=name;
+    b.onclick=()=>{ if(chosen.has(id)){chosen.delete(id);b.classList.remove("on");} else {chosen.add(id);b.classList.add("on");} };
+    wrap.appendChild(b);
+  });
+  document.getElementById("vgo").onclick=()=>{ state.veto=[...chosen]; state.step++; nextStep(); };
+  document.getElementById("vskip").onclick=()=>{ state.veto=[]; state.step++; nextStep(); };
+}
+
+function eraOK(m){ if(!state.era)return true; const y=+yearOf(m.release_date); if(!y)return false; if(state.era.gte&&y<+state.era.gte.slice(0,4))return false; if(state.era.lte&&y>+state.era.lte.slice(0,4))return false; return true; }
+function vetoOK(m){ if(!state.veto.length)return true; return !(m.genre_ids||[]).some(g=>state.veto.includes(g)); }
+
+async function discoverByMood(uv){
+  const genres=Object.keys(GENRES).map(id=>({id:+id,d:dist(uv,GENRES[id].sig)})).sort((a,b)=>a.d-b.d).slice(0,3).map(g=>g.id);
+  const p=new URLSearchParams({api_key:TMDB_KEY,include_adult:"false",language:"en-US",sort_by:"popularity.desc","vote_count.gte":"200",with_genres:genres.join("|"),page:String(1+Math.floor(Math.random()*2))});
+  if(state.era){ if(state.era.gte)p.set("primary_release_date.gte",state.era.gte); if(state.era.lte)p.set("primary_release_date.lte",state.era.lte); }
+  return fetchPool(`${API}/discover/movie?${p}`).catch(()=>[]);
+}
+
+const LOAD_LINES=["Reading your taste","Pulling reels people like you loved","Matching tonight's mood","Developing"];
+async function runLoading(){
+  let li=0;
+  stage.innerHTML=`<section class="screen loading"><p class="now"><span id="ll">${LOAD_LINES[0]}</span><span class="caret"></span></p></section>`;
+  const el=document.getElementById("ll");
+  const timer=setInterval(()=>{li=(li+1)%LOAD_LINES.length; if(el)el.textContent=LOAD_LINES[li];},760);
+  const uv=userVec(); state.uv=uv;
+  try{
+    await buildCandidates(uv);
+    clearInterval(timer);
+    if(!state.candidates.length) throw new Error("Nothing matched those filters — try loosening era or runtime.");
+    renderResult();
+  }catch(err){ clearInterval(timer); renderError(err,runLoading); }
+}
+
+/* the taste-seeded engine */
+async function buildCandidates(uv){
+  const meta=new Map(), freq=new Map(), src=new Map();
+  const seeds=profile.seeds.slice(-12);
+  if(seeds.length){
+    const lists=await Promise.all(seeds.map(s=>getRecommendations(s.id).then(r=>({s,r})).catch(()=>({s,r:[]}))));
+    lists.forEach(({s,r})=>r.forEach(m=>{
+      meta.set(m.id,m);
+      freq.set(m.id,(freq.get(m.id)||0)+1);
+      if(!src.has(m.id))src.set(m.id,[]);
+      if(src.get(m.id).length<2 && s.title) src.get(m.id).push(s.title);
+    }));
+  }
+  // supplement / cold-start with a mood discover pass
+  if(meta.size<15){
+    const disc=await discoverByMood(uv);
+    disc.forEach(m=>{ if(!meta.has(m.id)) meta.set(m.id,m); });
+  }
+  const seedIds=new Set(profile.seeds.map(s=>s.id));
+  let pool=[...meta.values()].filter(m=>
+    !seedIds.has(m.id) && !profile.dislikes.includes(m.id) &&
+    !profile.seen.includes(m.id) && !state.sessionSeen.has(m.id) &&
+    eraOK(m) && vetoOK(m));
+  state.candidates=pool; state.freq=freq; state.src=src;
+}
+
+function rankNow(){
+  const uv=state.uv, p=profile;
+  return state.candidates
+    .filter(m=>!state.sessionSeen.has(m.id))
+    .map(m=>{
+      const mv=genreVec(m.genre_ids);
+      const mood=dist(uv,mv);                       // tonight
+      const taste=dist(p.axis,mv);                  // overall you
+      const fit=Math.min(state.freq.get(m.id)||0,3)*0.30; // recommended by many of your films
+      const quality=(m.vote_average||0)/10;
+      const jitter=Math.random()*0.04;
+      const score=mood*0.85 + taste*0.45 - fit - quality*0.12 + jitter;
+      return {m,score};
+    })
+    .sort((a,b)=>a.score-b.score)
+    .map(x=>x.m);
+}
+async function topWithRuntime(ranked){
+  if(!state.runtime) return ranked;
+  const top=ranked.slice(0,16);
+  const rts=await Promise.all(top.map(m=>getRuntime(m.id)));
+  const lo=state.runtime.gte||0, hi=state.runtime.lte||100000;
+  const okIds=new Set(); top.forEach((m,i)=>{ const r=rts[i]; if(r==null||(r>=lo&&r<=hi)) okIds.add(m.id); });
+  const filtered=ranked.filter(m=>okIds.has(m.id));
+  return filtered.length>=3 ? filtered : ranked;
+}
+
+/* ============================================================
+   Result + warmer/colder
+   ============================================================ */
+function posterEl(m,small){ if(m&&m.poster_path) return `<img src="${(small?IMG_SM:IMG)+m.poster_path}" alt="${(m.title||"")} poster" loading="lazy">`; return `<div class="poster empty">No poster</div>`; }
+
+function whyText(film){
+  const uv=state.uv;
+  const sources=(state.src.get(film.id)||[]);
+  const ax=AXES.map(a=>({a,pull:Math.abs(uv[a]-0.5),hi:uv[a]>=0.5})).sort((x,y)=>y.pull-x.pull)[0];
+  const moodWord={tone:ax.hi?"something darker":"something brighter",energy:ax.hi?"momentum":"a slow burn",depth:ax.hi?"something to chew on":"easy escape",warmth:ax.hi?"real heart":"a cooler edge"}[ax.a];
+  if(sources.length) return `Because you loved <i>${sources.join("</i> and <i>")}</i> — and tonight you wanted <b>${moodWord}</b>.`;
+  return `Tonight you wanted <b>${moodWord}</b>, and this fits your taste.`;
+}
+
+async function renderResult(){
+  const ranked=await topWithRuntime(rankNow());
+  const picks=ranked.slice(0,3);
+  if(!picks.length){ return renderError(new Error("Out of matches — try New search."),()=>renderHome()); }
+  const top=picks[0], alts=picks.slice(1);
+  const gnames=genreNames(top.genre_ids);
+  const overview=(top.overview||"").length>240?top.overview.slice(0,240).trim()+"…":(top.overview||"");
+  const rating=top.vote_average?top.vote_average.toFixed(1):null;
+
+  stage.innerHTML=`
+    <section class="screen result">
+      <div class="trans">Fade out.</div>
+      <div class="sceneline"><span class="slug">${state.closing}</span><span class="pageno">&mdash;</span></div>
+      <p class="action">The clerk slides one across the counter.</p>
+      <div class="feature">
+        <div class="poster">${posterEl(top)}</div>
+        <div>
+          <h2>${top.title||"Untitled"}</h2>
+          <div class="filmmeta">${yearOf(top.release_date)}${rating?` &middot; <span class="star">&#9733; ${rating}</span>`:""}${gnames.length?` &middot; ${gnames.join(", ")}`:""}</div>
+          <p class="why">${whyText(top)}</p>
+          ${overview?`<p class="overview">${overview}</p>`:""}
+          <div class="extras" id="extras"><span class="extras-load">Checking where to watch&hellip;</span></div>
+        </div>
+      </div>
+
+      <div class="reactions">
+        <div class="rlabel">Not quite? Steer it.</div>
+        <div class="react-row">
+          <button class="react" data-r="dark">Too dark</button>
+          <button class="react" data-r="light">Want lighter</button>
+          <button class="react" data-r="slow">Too slow</button>
+          <button class="react" data-r="seen">Seen it</button>
+          <button class="react" data-r="no">Not my thing</button>
+          <button class="react love" data-r="love">Love it &mdash; remember this</button>
+        </div>
+      </div>
+
+      ${alts.length?`<div class="alts"><h3>Also in the running</h3><div class="alt-row" id="altrow"></div></div>`:""}
+
+      <div class="actions">
+        <button class="btn" id="again">Another pull</button>
+        <button class="btn ghost" id="home">Home</button>
+      </div>
+      <div class="foot"><div class="end">The End</div><p>Data &amp; posters from TMDB &mdash; not endorsed or certified by TMDB</p></div>
+    </section>`;
+
+  if(alts.length){
+    const row=document.getElementById("altrow");
+    alts.forEach(a=>{
+      const c=document.createElement("button"); c.className="alt"; c.type="button";
+      c.innerHTML=`${posterEl(a,true)}<span><span class="at">${a.title||"Untitled"}</span><span class="ay">${yearOf(a.release_date)}</span></span>`;
+      c.onclick=()=>{ state.candidates=[a,...state.candidates.filter(m=>m.id!==a.id)]; state.freq.set(a.id,(state.freq.get(a.id)||0)+5); renderResult(); window.scrollTo({top:0,behavior:"smooth"}); };
+      row.appendChild(c);
+    });
+  }
+
+  stage.querySelectorAll(".react").forEach(btn=>{
+    btn.onclick=()=>react(btn.getAttribute("data-r"), top);
+  });
+  document.getElementById("again").onclick=()=>runLoading();
+  document.getElementById("home").onclick=()=>renderHome();
+
+  enrich(top.id);
+}
+
+function react(kind, film){
+  const nudge=(a,d)=>{ state.uv[a]=clamp01(state.uv[a]+d); };
+  if(kind==="dark") nudge("tone",-0.18);
+  else if(kind==="light"){ nudge("tone",-0.18); nudge("warmth",+0.12); }
+  else if(kind==="slow") nudge("energy",+0.20);
+  if(kind==="seen"){ state.sessionSeen.add(film.id); markSeen(film); saveProfile(); }
+  else if(kind==="no"){ state.sessionSeen.add(film.id); learnDislike(film); saveProfile(); }
+  else if(kind==="love"){ learnLike(film,1.5); markSeen(film); state.sessionSeen.add(film.id); saveProfile(); }
+  renderResult(); window.scrollTo({top:0,behavior:"smooth"});
+}
+
+async function enrich(id){
+  const box=document.getElementById("extras"); if(!box)return;
+  try{
+    const x=await fetchExtras(id); let html="";
+    if(x.providers.length){ const names=x.providers.slice(0,4).join(", ");
+      html+=x.link?`<a class="extras-line" href="${x.link}" target="_blank" rel="noopener">&#9656; Streaming &mdash; ${names}</a>`:`<span class="extras-line">&#9656; Streaming &mdash; ${names}</span>`;
+    } else if(x.link){ html+=`<a class="extras-line" href="${x.link}" target="_blank" rel="noopener">&#9656; Rent or buy &mdash; see options</a>`; }
+    else { html+=`<span class="extras-line dim">&#9656; No streaming info for your region</span>`; }
+    if(x.trailer) html+=`<a class="extras-line" href="${x.trailer}" target="_blank" rel="noopener">&#9656; Watch the trailer</a>`;
+    html+=`<span class="extras-attr">availability via JustWatch</span>`;
+    box.innerHTML=html;
+  }catch(_){ box.innerHTML=`<span class="extras-line dim">&#9656; Couldn't load availability</span>`; }
+}
+
+function renderError(err,retry){
+  stage.innerHTML=`
+    <section class="screen err">
+      <h2>The reel jammed.</h2>
+      <p>Couldn't reach the movie database. ${err&&err.message?("("+err.message+")"):""} If you're in a preview window, download the file and open it directly in Safari &mdash; that usually clears it.</p>
+      <button class="btn" id="retry">Try again</button>
+    </section>`;
+  document.getElementById("retry").onclick=()=> (retry?retry():boot());
+}
+
+/* go */
+boot();
+
+</script>
+</body>
+</html>
