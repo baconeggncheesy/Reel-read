@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Reel Read — what to watch tonight</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -203,586 +205,514 @@
   .foot p{font-size:10.5px;letter-spacing:.05em;color:var(--ink-faint);line-height:1.9}
 
   @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+  /* ===== v-next: onboarding, taste, reactions ===== */
+  .ob-head{font-family:var(--display,inherit)}
+  .lead{font-size:clamp(17px,4.6vw,20px);line-height:1.7;margin:0 0 8px;max-width:54ch}
+  .sub{color:var(--ink-soft);font-size:13.5px;line-height:1.6;margin:0 0 22px;max-width:52ch}
+
+  /* love-grid: tap films you like */
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:6px}
+  @media(min-width:520px){.grid{grid-template-columns:repeat(4,1fr)}}
+  .gtile{position:relative;padding:0;border:1px solid var(--line);background:var(--paper-edge);border-radius:2px;cursor:pointer;aspect-ratio:2/3;overflow:hidden;transition:transform .12s ease}
+  .gtile img{width:100%;height:100%;object-fit:cover;display:block}
+  .gtile:hover{transform:translateY(-2px)}
+  .gtile.on{outline:2px solid var(--ribbon);outline-offset:-2px}
+  .gtile.on::after{content:"\2713";position:absolute;top:6px;right:6px;width:22px;height:22px;border-radius:50%;background:var(--ribbon);color:var(--paper);font-size:13px;display:flex;align-items:center;justify-content:center;z-index:2}
+  .gtile.on::before{content:"";position:absolute;inset:0;background:rgba(162,58,44,.18);z-index:1}
+  .grid-bar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:22px;flex-wrap:wrap}
+  .grid-bar .count{font-size:12px;letter-spacing:.06em;color:var(--ink-soft)}
+
+  /* duels: this or that */
+  .duel{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px}
+  .duelcard{position:relative;padding:0;border:1px solid var(--line);background:var(--paper-edge);border-radius:2px;cursor:pointer;overflow:hidden;transition:transform .12s ease}
+  .duelcard:hover{transform:translateY(-3px)}
+  .duelcard img{width:100%;aspect-ratio:2/3;object-fit:cover;display:block}
+  .duelcard .dt{font-size:12px;line-height:1.3;padding:9px 10px;color:var(--ink);background:var(--paper)}
+  .duel-or{text-align:center;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-faint);font-size:12px;margin:18px 0 4px}
+
+  /* taste card / dossier */
+  .dossier{border:1px solid var(--line-2);border-radius:2px;padding:22px 20px;margin-top:4px}
+  .dossier .label{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:14px}
+  .dossier .read{font-size:clamp(18px,5vw,23px);line-height:1.45;margin-bottom:16px}
+  .dossier .read b{color:var(--ribbon)}
+  .dossier .rowlabel{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);margin:14px 0 6px}
+  .dossier .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .dossier .tag{font-size:12px;border:1px solid var(--line-2);border-radius:2px;padding:5px 10px;color:var(--ink)}
+
+  /* import */
+  .filebtn{position:relative;overflow:hidden}
+  .filebtn input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;font-size:0}
+  .import-note{font-size:11.5px;color:var(--ink-faint);line-height:1.6;margin-top:14px;max-width:48ch}
+  .import-status{font-size:12.5px;color:var(--ribbon);letter-spacing:.04em;margin-top:14px;min-height:16px}
+
+  /* home (returning) */
+  .home{text-align:center;min-height:70vh;display:flex;flex-direction:column}
+  .home .center{margin:auto 0;padding:6vh 0}
+  .home h1{font-family:var(--display,inherit);font-weight:700;text-transform:uppercase;letter-spacing:.16em;font-size:clamp(30px,9vw,52px);line-height:1.12}
+  .home .hi{color:var(--ink-soft);font-size:13px;letter-spacing:.04em;margin-bottom:24px}
+  .home .mini{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin-top:30px}
+  .home .mini button{background:none;border:none;color:var(--ink-faint);cursor:pointer;font-family:inherit;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;text-decoration:underline;text-underline-offset:3px;padding:4px}
+  .home .mini button:hover{color:var(--ribbon)}
+
+  /* warmer / colder reactions on the result */
+  .reactions{margin-top:24px}
+  .reactions .rlabel{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:10px}
+  .react-row{display:flex;flex-wrap:wrap;gap:9px}
+  .react{font-family:inherit;font-size:13px;color:var(--ink);background:transparent;border:1px solid var(--line-dot);border-radius:2px;padding:9px 13px;cursor:pointer;transition:border-color .15s ease,color .15s ease}
+  .react:hover{border-color:var(--ink)}
+  .react.love:hover{border-color:var(--ribbon);color:var(--ribbon)}
+
+  .obnote{font-size:11px;letter-spacing:.05em;color:var(--ink-faint);margin-top:26px;text-align:center}
+
 </style>
 </head>
 <body>
   <main class="stage" id="stage"></main>
-
 <script>
 /* ============================================================
-   Reel Read — config
+   Reel Read — taste-aware build
    ============================================================ */
-const TMDB_KEY = "c2015ecda624b83d2e3d19ead77c0a8c"; // v3 API key
+const TMDB_KEY = "c2015ecda624b83d2e3d19ead77c0a8c";
 const API = "https://api.themoviedb.org/3";
 const IMG = "https://image.tmdb.org/t/p/w500";
-const IMG_SM = "https://image.tmdb.org/t/p/w185";
+const IMG_SM = "https://image.tmdb.org/t/p/w342";
 
-/* ---------- Genre table: TMDB id -> name + 4-axis signature ----------
-   axes (0..1):
-   tone   : 0 light/joyful  -> 1 dark/heavy
-   energy : 0 calm/slow     -> 1 intense/fast
-   depth  : 0 escapist      -> 1 cerebral
-   warmth : 0 cool/detached -> 1 warm/emotional                       */
+/* ---------- genre -> name + 4-axis signature ----------
+   tone 0 light..1 dark | energy 0 calm..1 intense
+   depth 0 escapist..1 cerebral | warmth 0 cool..1 warm */
 const GENRES = {
-  28:   {name:"Action",          sig:{tone:.55,energy:.90,depth:.30,warmth:.40}},
-  12:   {name:"Adventure",       sig:{tone:.35,energy:.70,depth:.35,warmth:.60}},
-  16:   {name:"Animation",       sig:{tone:.30,energy:.55,depth:.40,warmth:.80}},
-  35:   {name:"Comedy",          sig:{tone:.20,energy:.55,depth:.25,warmth:.65}},
-  80:   {name:"Crime",           sig:{tone:.75,energy:.60,depth:.60,warmth:.35}},
-  99:   {name:"Documentary",     sig:{tone:.50,energy:.30,depth:.90,warmth:.50}},
-  18:   {name:"Drama",           sig:{tone:.60,energy:.40,depth:.70,warmth:.70}},
-  10751:{name:"Family",          sig:{tone:.15,energy:.50,depth:.25,warmth:.90}},
-  14:   {name:"Fantasy",         sig:{tone:.40,energy:.60,depth:.50,warmth:.70}},
-  36:   {name:"History",         sig:{tone:.60,energy:.40,depth:.75,warmth:.55}},
-  27:   {name:"Horror",          sig:{tone:.95,energy:.70,depth:.45,warmth:.20}},
-  10402:{name:"Music",           sig:{tone:.35,energy:.60,depth:.40,warmth:.75}},
-  9648: {name:"Mystery",         sig:{tone:.65,energy:.55,depth:.70,warmth:.40}},
-  10749:{name:"Romance",         sig:{tone:.35,energy:.35,depth:.50,warmth:.90}},
-  878:  {name:"Sci-Fi",          sig:{tone:.55,energy:.65,depth:.75,warmth:.45}},
-  53:   {name:"Thriller",        sig:{tone:.80,energy:.75,depth:.60,warmth:.30}},
-  10752:{name:"War",             sig:{tone:.85,energy:.70,depth:.70,warmth:.45}},
-  37:   {name:"Western",         sig:{tone:.65,energy:.60,depth:.50,warmth:.45}},
+  28:{name:"Action",sig:{tone:.55,energy:.90,depth:.30,warmth:.40}},
+  12:{name:"Adventure",sig:{tone:.35,energy:.70,depth:.35,warmth:.60}},
+  16:{name:"Animation",sig:{tone:.30,energy:.55,depth:.40,warmth:.80}},
+  35:{name:"Comedy",sig:{tone:.20,energy:.55,depth:.25,warmth:.65}},
+  80:{name:"Crime",sig:{tone:.75,energy:.60,depth:.60,warmth:.35}},
+  99:{name:"Documentary",sig:{tone:.50,energy:.30,depth:.90,warmth:.50}},
+  18:{name:"Drama",sig:{tone:.60,energy:.40,depth:.70,warmth:.70}},
+  10751:{name:"Family",sig:{tone:.15,energy:.50,depth:.25,warmth:.90}},
+  14:{name:"Fantasy",sig:{tone:.40,energy:.60,depth:.50,warmth:.70}},
+  36:{name:"History",sig:{tone:.60,energy:.40,depth:.75,warmth:.55}},
+  27:{name:"Horror",sig:{tone:.95,energy:.70,depth:.45,warmth:.20}},
+  10402:{name:"Music",sig:{tone:.35,energy:.60,depth:.40,warmth:.75}},
+  9648:{name:"Mystery",sig:{tone:.65,energy:.55,depth:.70,warmth:.40}},
+  10749:{name:"Romance",sig:{tone:.35,energy:.35,depth:.50,warmth:.90}},
+  878:{name:"Sci-Fi",sig:{tone:.55,energy:.65,depth:.75,warmth:.45}},
+  53:{name:"Thriller",sig:{tone:.80,energy:.75,depth:.60,warmth:.30}},
+  10752:{name:"War",sig:{tone:.85,energy:.70,depth:.70,warmth:.45}},
+  37:{name:"Western",sig:{tone:.65,energy:.60,depth:.50,warmth:.45}},
 };
+const AXES=["tone","energy","depth","warmth"];
 
-/* ---------- Quiz bank: a random handful is drawn each session ---------- */
+/* ---------- tonight's mood quiz (the fast layer) ---------- */
 const QUIZ_BANK = [
-  { q:"What does tonight need to feel like?",
-    opts:[
-      {t:"Comfort and warmth",        v:{warmth:.90,tone:.25,energy:.30}},
-      {t:"A jolt of adrenaline",      v:{energy:.95,tone:.55}},
-      {t:"Beautiful and a little strange", v:{depth:.80,tone:.55,energy:.40}},
-      {t:"I want to be unsettled",    v:{tone:.95,energy:.65,warmth:.25}},
-    ]},
-  { q:"How much do you want to think?",
-    opts:[
-      {t:"Switch my brain off",       v:{depth:.15,energy:.60}},
-      {t:"Give me a real puzzle",     v:{depth:.90}},
-      {t:"Just make me feel something",v:{warmth:.85,depth:.55}},
-      {t:"Surprise me",               v:{}, w:0},
-    ]},
-  { q:"Pick a pace.",
-    opts:[
-      {t:"Slow and immersive",        v:{energy:.15}},
-      {t:"Steady, absorbing",         v:{energy:.45}},
-      {t:"Fast and loud",             v:{energy:.95}},
-      {t:"Builds to something",       v:{energy:.60,tone:.65}},
-    ]},
-  { q:"Which ending sounds right?",
-    opts:[
-      {t:"Hopeful, a little teary",   v:{warmth:.90,tone:.30}},
-      {t:"Cool and ambiguous",        v:{warmth:.20,tone:.75,depth:.70}},
-      {t:"Triumphant and earned",     v:{warmth:.80,energy:.65}},
-      {t:"Haunts me for days",        v:{tone:.80,depth:.80,warmth:.35}},
-    ]},
-  { q:"Who do you want to spend two hours with?",
-    opts:[
-      {t:"People I'd love in real life", v:{warmth:.90,tone:.30}},
-      {t:"A brilliant mess",          v:{depth:.65,tone:.60,warmth:.50}},
-      {t:"Someone a little dangerous",v:{tone:.80,energy:.60,warmth:.30}},
-      {t:"Doesn't matter — dazzle me",v:{energy:.70,depth:.55}},
-    ]},
-  { q:"What should it leave on your skin?",
-    opts:[
-      {t:"A warm glow",               v:{warmth:.90,tone:.25}},
-      {t:"A racing pulse",            v:{energy:.90,tone:.60}},
-      {t:"A lump in the throat",      v:{warmth:.80,depth:.70,tone:.55}},
-      {t:"A cold chill",              v:{tone:.88,warmth:.25,depth:.60}},
-    ]},
-  { q:"How familiar do you want it?",
-    opts:[
-      {t:"Comfort-rewatch energy",    v:{warmth:.80,depth:.30,tone:.30}},
-      {t:"A safe pair of hands",      v:{warmth:.60,energy:.50}},
-      {t:"Something I've never seen", v:{depth:.70,energy:.60}},
-      {t:"Weird. Genuinely weird.",   v:{depth:.80,tone:.60,energy:.55}},
-    ]},
-  { q:"Where should it take you?",
-    opts:[
-      {t:"Somewhere cozy and close",  v:{warmth:.85,energy:.30,tone:.30}},
-      {t:"Somewhere far away",        v:{depth:.60,energy:.55,warmth:.55}},
-      {t:"Into a city after dark",    v:{tone:.70,energy:.65,depth:.50,warmth:.40}},
-      {t:"Somewhere that scares me",  v:{tone:.90,energy:.65,warmth:.25}},
-    ]},
-  { q:"What's the weather in it?",
-    opts:[
-      {t:"Sunlit and warm",           v:{warmth:.80,tone:.25,energy:.45}},
-      {t:"Rain on the window",        v:{tone:.55,warmth:.50,energy:.30,depth:.55}},
-      {t:"A gathering storm",         v:{tone:.70,energy:.80}},
-      {t:"Cold and clear",            v:{tone:.55,warmth:.30,depth:.55}},
-    ]},
-  { q:"How big should it feel?",
-    opts:[
-      {t:"Small and intimate",        v:{warmth:.75,energy:.30,depth:.55}},
-      {t:"A real adventure",          v:{energy:.70,warmth:.55,tone:.40}},
-      {t:"Epic and sweeping",         v:{energy:.65,depth:.60,tone:.55}},
-      {t:"Tight and claustrophobic",  v:{tone:.80,energy:.60,warmth:.30}},
-    ]},
-  { q:"Pick a sound.",
-    opts:[
-      {t:"A warm acoustic score",     v:{warmth:.80,energy:.35,tone:.30}},
-      {t:"Pounding bass",             v:{energy:.90,tone:.60}},
-      {t:"Eerie silence",             v:{tone:.80,energy:.35,depth:.65,warmth:.30}},
-      {t:"A soaring orchestra",       v:{energy:.60,warmth:.60,depth:.55}},
-    ]},
-  { q:"Who's the hero tonight?",
-    opts:[
-      {t:"An underdog to root for",   v:{warmth:.80,energy:.55,tone:.35}},
-      {t:"A morally grey antihero",   v:{tone:.75,depth:.65,warmth:.35}},
-      {t:"An ordinary person in over their head", v:{depth:.55,tone:.60,warmth:.55,energy:.55}},
-      {t:"No hero — just chaos",      v:{tone:.70,energy:.70,depth:.55,warmth:.30}},
-    ]},
-  { q:"What do you want to do when it ends?",
-    opts:[
-      {t:"Sigh, satisfied",           v:{warmth:.80,tone:.30}},
-      {t:"Sit in stunned silence",    v:{tone:.75,depth:.80,warmth:.40}},
-      {t:"Cheer out loud",            v:{warmth:.75,energy:.80,tone:.30}},
-      {t:"Sleep with the lights on",  v:{tone:.90,energy:.65,warmth:.25}},
-    ]},
-  { q:"How much realism?",
-    opts:[
-      {t:"Grounded, true to life",    v:{depth:.65,warmth:.60,energy:.40}},
-      {t:"Heightened and stylish",    v:{tone:.60,energy:.65,depth:.50,warmth:.40}},
-      {t:"Full fantasy — elsewhere",  v:{depth:.60,energy:.60,warmth:.60,tone:.40}},
-      {t:"Dreamlike, unreal",         v:{depth:.80,tone:.55,warmth:.45}},
-    ]},
-  { q:"Choose a texture.",
-    opts:[
-      {t:"Soft and golden",           v:{warmth:.85,tone:.30,energy:.35}},
-      {t:"Neon and chrome",           v:{tone:.65,energy:.70,warmth:.35,depth:.50}},
-      {t:"Grain and shadow",          v:{tone:.80,depth:.60,warmth:.35}},
-      {t:"Bright and candy-colored",  v:{tone:.25,warmth:.70,energy:.65}},
-    ]},
+  { q:"What does tonight need to feel like?", opts:[
+    {t:"Comfort and warmth",v:{warmth:.90,tone:.25,energy:.30}},
+    {t:"A jolt of adrenaline",v:{energy:.95,tone:.55}},
+    {t:"Beautiful and a little strange",v:{depth:.80,tone:.55,energy:.40}},
+    {t:"I want to be unsettled",v:{tone:.95,energy:.65,warmth:.25}} ]},
+  { q:"How much do you want to think?", opts:[
+    {t:"Switch my brain off",v:{depth:.15,energy:.60}},
+    {t:"Give me a real puzzle",v:{depth:.90}},
+    {t:"Just make me feel something",v:{warmth:.85,depth:.55}},
+    {t:"Surprise me",v:{},w:0} ]},
+  { q:"Pick a pace.", opts:[
+    {t:"Slow and immersive",v:{energy:.15}},
+    {t:"Steady, absorbing",v:{energy:.45}},
+    {t:"Fast and loud",v:{energy:.95}},
+    {t:"Builds to something",v:{energy:.60,tone:.65}} ]},
+  { q:"Which ending sounds right?", opts:[
+    {t:"Hopeful, a little teary",v:{warmth:.90,tone:.30}},
+    {t:"Cool and ambiguous",v:{warmth:.20,tone:.75,depth:.70}},
+    {t:"Triumphant and earned",v:{warmth:.80,energy:.65}},
+    {t:"Haunts me for days",v:{tone:.80,depth:.80,warmth:.35}} ]},
+  { q:"What should it leave on your skin?", opts:[
+    {t:"A warm glow",v:{warmth:.90,tone:.25}},
+    {t:"A racing pulse",v:{energy:.90,tone:.60}},
+    {t:"A lump in the throat",v:{warmth:.80,depth:.70,tone:.55}},
+    {t:"A cold chill",v:{tone:.88,warmth:.25,depth:.60}} ]},
+  { q:"How big should it feel?", opts:[
+    {t:"Small and intimate",v:{warmth:.75,energy:.30,depth:.55}},
+    {t:"A real adventure",v:{energy:.70,warmth:.55,tone:.40}},
+    {t:"Epic and sweeping",v:{energy:.65,depth:.60,tone:.55}},
+    {t:"Tight and claustrophobic",v:{tone:.80,energy:.60,warmth:.30}} ]},
+  { q:"Pick a sound.", opts:[
+    {t:"A warm acoustic score",v:{warmth:.80,energy:.35,tone:.30}},
+    {t:"Pounding bass",v:{energy:.90,tone:.60}},
+    {t:"Eerie silence",v:{tone:.80,energy:.35,depth:.65,warmth:.30}},
+    {t:"A soaring orchestra",v:{energy:.60,warmth:.60,depth:.55}} ]},
+  { q:"What do you want to do when it ends?", opts:[
+    {t:"Sigh, satisfied",v:{warmth:.80,tone:.30}},
+    {t:"Sit in stunned silence",v:{tone:.75,depth:.80,warmth:.40}},
+    {t:"Cheer out loud",v:{warmth:.75,energy:.80,tone:.30}},
+    {t:"Sleep with the lights on",v:{tone:.90,energy:.65,warmth:.25}} ]},
 ];
-
-/* always asked (it sets the release-date window) */
-const ERA_Q = {
-  era:true,
-  qs:["How old-school are we going?","Pick an era.","How far back should we reach?","What vintage tonight?"],
+const ERA_Q = { era:true,
+  qs:["How old-school are we going?","Pick an era.","What vintage tonight?"],
   opts:[
-    {t:"Just released / fresh",        era:{gte:"2018-01-01"}},
-    {t:"Modern classics (2000s–10s)",  era:{gte:"2000-01-01",lte:"2017-12-31"}},
-    {t:"The '80s and '90s",            era:{gte:"1980-01-01",lte:"1999-12-31"}},
-    {t:"Old Hollywood (pre-1980)",     era:{gte:"1930-01-01",lte:"1979-12-31"}},
-    {t:"No preference",                era:null},
-  ]};
-
-/* always asked: a runtime budget (sets the with_runtime window) */
-const RUNTIME_Q = {
-  runtime:true,
-  qs:["How much time do you have?","What's your runtime budget?","How long can you sit still?"],
+    {t:"Just released / fresh",era:{gte:"2018-01-01"}},
+    {t:"Modern classics (2000s–10s)",era:{gte:"2000-01-01",lte:"2017-12-31"}},
+    {t:"The '80s and '90s",era:{gte:"1980-01-01",lte:"1999-12-31"}},
+    {t:"Old Hollywood (pre-1980)",era:{gte:"1930-01-01",lte:"1979-12-31"}},
+    {t:"No preference",era:null} ]};
+const RUNTIME_Q = { runtime:true,
+  qs:["How much time do you have?","What's your runtime budget?"],
   opts:[
-    {t:"Short and sweet (~90 min)",   rt:{lte:105}},
-    {t:"A standard couple of hours",  rt:{gte:95,lte:150}},
-    {t:"I'm in it for an epic",        rt:{gte:140}},
-    {t:"No limit",                     rt:null},
-  ]};
+    {t:"Short and sweet (~90 min)",rt:{lte:105}},
+    {t:"A standard couple of hours",rt:{gte:95,lte:150}},
+    {t:"I'm in it for an epic",rt:{gte:140}},
+    {t:"No limit",rt:null} ]};
+const VETO_GENRES=[[27,"Horror"],[10749,"Romance"],[35,"Comedy"],[10402,"Musicals"],[99,"Documentary"],[16,"Animation"],[28,"Action"],[878,"Sci-Fi"]];
+const VETO_Q={veto:true};
+const VETO_PROMPTS=["Anything you're not in the mood for? Cross it off.","Cross off anything to avoid tonight.","Not tonight? Cross it out."];
+const QUIZ_PICK=3;
 
-/* genres you can cross off (multi-select veto scene) */
-const VETO_GENRES = [
-  [27,"Horror"],[10749,"Romance"],[35,"Comedy"],[10402,"Musicals"],
-  [99,"Documentary"],[16,"Animation"],[28,"Action"],[878,"Sci-Fi"],
-];
-const VETO_Q = { veto:true };
-const VETO_PROMPTS = [
-  "Anything you're not in the mood for? Cross it off.",
-  "Cross off anything you want to avoid tonight.",
-  "Strike anything that sounds wrong right now.",
-  "Not tonight? Cross it out.",
-];
-
-const QUIZ_PICK = 3; // mood questions drawn per session (era, runtime, veto are always added)
-
-/* ---------- Word association: single-word stimuli, drawn fresh each session ---------- */
-const CUE_POOL = ["RAIN","GLASS","DISTANCE","SMOKE","HOME","ENGINE","MIRROR","SALT",
-  "NEON","STATIC","HARBOR","FEVER","VELVET","ASH","COMPASS","HUNGER","WIRE","BLOOM",
-  "GRAVITY","DUST","ECHO","SIGNAL","MARROW","CELLULOID","WINTER","APPETITE",
-  "THRESHOLD","EMBER","TIDE","FRACTURE","IRON","MOTH","LANTERN","VOLTAGE","PETAL",
-  "COMET","ASPHALT","SILK","THUNDER","FROST","MARQUEE","CURTAIN","ORCHID","RIPTIDE",
-  "CINDER","HALO","DRIFT","TELEGRAM","FILAMENT","UNDERTOW"];
-const CUE_COUNT = 4;
-
-/* sluglines grouped by time of day, so the scene matches when you're playing */
-const SLUG_BUCKETS = {
-  morning: [
-    "INT. A KITCHEN — MORNING","EXT. A BUS STOP — EARLY","INT. YOUR BED — TOO EARLY",
-    "EXT. THE PARK — MORNING LIGHT","INT. A COFFEE SHOP — OPENING","INT. AN OFFICE — 9 A.M.",
-    "EXT. A QUIET STREET — MORNING","INT. A COMMUTER TRAIN — MORNING","EXT. A FARMERS MARKET — EARLY",
-    "INT. A LAUNDROMAT — MORNING",
-  ],
-  afternoon: [
-    "INT. A LIBRARY — AFTERNOON","EXT. A ROOFTOP — MIDDAY SUN","INT. AN EMPTY OFFICE — 3 P.M.",
-    "EXT. A PARKING LOT — AFTERNOON","INT. A DINER — LATE LUNCH","EXT. THE BEACH — LOW TIDE",
-    "EXT. A FREEWAY — AFTERNOON HAZE","INT. A WAITING ROOM — AFTERNOON","EXT. A BACKYARD — GOLDEN GRASS",
-    "INT. A BOOKSTORE — AFTERNOON",
-  ],
-  evening: [
-    "INT. YOUR APARTMENT — DUSK","EXT. A QUIET STREET — DUSK","EXT. A ROOFTOP — BLUE HOUR",
-    "INT. A BAR — EARLY EVENING","EXT. A PARKING LOT — SUNSET","INT. THE LAST VIDEO STORE — CLOSING",
-    "EXT. A TRAIN PLATFORM — EVENING","INT. A KITCHEN — DINNERTIME","EXT. A PIER — SUNSET",
-    "INT. A CINEMA LOBBY — EARLY SHOW",
-  ],
-  night: [
-    "INT. AN ALL-NIGHT DINER — 3 A.M.","INT. A SLEEPLESS BEDROOM — 2 A.M.","INT. AN EMPTY THEATER — NIGHT",
-    "INT. PROJECTION BOOTH — CONTINUOUS","EXT. A NEON STREET — NIGHT","INT. BACK ROW OF THE CINEMA — NIGHT",
-    "EXT. A ROOFTOP — MIDNIGHT","INT. A DIM KITCHEN — LATE","EXT. A GAS STATION — 1 A.M.",
-    "INT. YOUR APARTMENT — LATE",
-  ],
+/* time-of-day sluglines */
+const SLUG_BUCKETS={
+  morning:["INT. A KITCHEN — MORNING","EXT. A BUS STOP — EARLY","INT. A COFFEE SHOP — OPENING","EXT. THE PARK — MORNING LIGHT","INT. A COMMUTER TRAIN — MORNING","EXT. A QUIET STREET — MORNING"],
+  afternoon:["INT. A LIBRARY — AFTERNOON","EXT. A ROOFTOP — MIDDAY SUN","INT. A DINER — LATE LUNCH","EXT. THE BEACH — LOW TIDE","INT. A BOOKSTORE — AFTERNOON","EXT. A FREEWAY — AFTERNOON HAZE"],
+  evening:["INT. YOUR APARTMENT — DUSK","EXT. A QUIET STREET — DUSK","EXT. A ROOFTOP — BLUE HOUR","INT. A BAR — EARLY EVENING","EXT. A PIER — SUNSET","INT. A CINEMA LOBBY — EARLY SHOW"],
+  night:["INT. AN ALL-NIGHT DINER — 3 A.M.","INT. A SLEEPLESS BEDROOM — 2 A.M.","INT. AN EMPTY THEATER — NIGHT","EXT. A NEON STREET — NIGHT","INT. BACK ROW OF THE CINEMA — NIGHT","INT. YOUR APARTMENT — LATE"],
 };
-const CLOSING_SLUGS = [
-  "INT. THE PROJECTION BOOTH — REEL CHANGE","EXT. THE BOX OFFICE — AFTER THE SHOW","INT. THE VIDEO STORE — CLOSING TIME",
-];
-function timeBucket(h){
-  if(h>=5  && h<12) return "morning";
-  if(h>=12 && h<17) return "afternoon";
-  if(h>=17 && h<21) return "evening";
-  return "night";
-}
-/* enough sluglines for the session, from the current time-of-day bucket */
-function slugsForNow(n){
-  const bucket=SLUG_BUCKETS[timeBucket(new Date().getHours())];
-  let out=shuffle(bucket);
-  while(out.length<n) out=out.concat(shuffle(bucket));
-  return out.slice(0,n);
-}
+const CLOSING_SLUGS=["INT. THE PROJECTION BOOTH — REEL CHANGE","EXT. THE BOX OFFICE — AFTER THE SHOW","INT. THE VIDEO STORE — CLOSING TIME"];
+function timeBucket(h){ if(h>=5&&h<12)return"morning"; if(h>=12&&h<17)return"afternoon"; if(h>=17&&h<21)return"evening"; return"night"; }
+function slugsForNow(n){ const b=SLUG_BUCKETS[timeBucket(new Date().getHours())]; let o=shuffle(b); while(o.length<n)o=o.concat(shuffle(b)); return o.slice(0,n); }
 
-function shuffle(arr){
-  const a=arr.slice();
-  for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
-  return a;
-}
-function pick(a){ return a[Math.floor(Math.random()*a.length)]; }
-/* clone a question template, choosing one of its rotating phrasings */
-function instedQ(t){ return Object.assign({}, t, { q: t.qs ? pick(t.qs) : t.q }); }
-
-/* word -> partial axis vector (only the axes the word strongly evokes).
-   Unknown words contribute no vibe nudge, but are still sent to TMDB
-   keyword search, so open-ended answers always get a shot at matching. */
-const LEXICON = {
-  // warm / cozy
-  home:{warmth:.95,tone:.2,energy:.25}, blanket:{warmth:.9,energy:.2}, fireplace:{warmth:.9,tone:.25,energy:.3},
-  hearth:{warmth:.9,tone:.3}, cabin:{warmth:.75,tone:.4,energy:.3}, tea:{warmth:.8,energy:.2}, coffee:{warmth:.7,energy:.5},
-  candle:{warmth:.8,energy:.2,tone:.35}, hug:{warmth:.95,energy:.3}, mother:{warmth:.9}, family:{warmth:.9,tone:.3},
-  kitchen:{warmth:.8,energy:.4}, bread:{warmth:.8,energy:.3}, soup:{warmth:.85,energy:.25}, cat:{warmth:.75,energy:.3},
-  dog:{warmth:.8,energy:.5}, garden:{warmth:.85,energy:.35,tone:.25}, friend:{warmth:.9,energy:.45}, love:{warmth:.95,depth:.5},
-  kindness:{warmth:.95}, childhood:{warmth:.8,depth:.5,tone:.35}, holiday:{warmth:.8,energy:.5,tone:.2}, christmas:{warmth:.85,tone:.2,energy:.5},
-  // bright / joyful
-  sunshine:{tone:.15,warmth:.8,energy:.5}, sunrise:{tone:.2,warmth:.85,energy:.45,depth:.4}, summer:{tone:.2,warmth:.8,energy:.55},
-  beach:{tone:.25,warmth:.7,energy:.5}, laughter:{tone:.15,warmth:.85,energy:.6}, dance:{tone:.25,energy:.7,warmth:.7},
-  music:{warmth:.75,energy:.6,depth:.4}, festival:{tone:.2,energy:.7,warmth:.7}, gold:{tone:.3,warmth:.7}, meadow:{tone:.2,warmth:.75,energy:.3},
-  spring:{tone:.2,warmth:.75,energy:.45}, picnic:{tone:.2,warmth:.8,energy:.4}, dawn:{energy:.4,warmth:.7,tone:.3,depth:.45},
-  // dark / heavy
-  night:{tone:.7,energy:.4,depth:.5}, shadow:{tone:.8,warmth:.3,depth:.55}, blood:{tone:.9,energy:.7,warmth:.2},
-  knife:{tone:.9,energy:.75,warmth:.2}, grave:{tone:.85,warmth:.25,energy:.3}, ash:{tone:.8,warmth:.3,energy:.3},
-  smoke:{tone:.7,depth:.5,energy:.4}, ghost:{tone:.8,depth:.6,warmth:.3}, dread:{tone:.9,energy:.55,warmth:.2},
-  fear:{tone:.9,energy:.65,warmth:.2}, void:{tone:.85,depth:.7,warmth:.2,energy:.25}, abyss:{tone:.9,depth:.7,warmth:.2},
-  storm:{tone:.7,energy:.8}, war:{tone:.85,energy:.75,warmth:.4}, ruin:{tone:.8,depth:.55,warmth:.3}, raven:{tone:.75,depth:.55,warmth:.3},
-  crow:{tone:.75,depth:.5,warmth:.3}, winter:{tone:.6,energy:.3,warmth:.35}, cold:{tone:.6,warmth:.2,energy:.3},
-  ice:{tone:.55,warmth:.2,energy:.3}, fog:{tone:.6,depth:.6,energy:.3}, rain:{tone:.6,energy:.3,depth:.5,warmth:.5},
-  grey:{tone:.6,warmth:.35,energy:.3}, gray:{tone:.6,warmth:.35,energy:.3}, black:{tone:.85,warmth:.3}, midnight:{tone:.75,energy:.4,depth:.5},
-  nightmare:{tone:.95,energy:.6,warmth:.2}, monster:{tone:.85,energy:.65,warmth:.25}, scar:{tone:.7,depth:.6,warmth:.4},
-  wound:{tone:.75,depth:.55,warmth:.4}, decay:{tone:.8,depth:.55,warmth:.25}, mask:{tone:.7,depth:.6,warmth:.3}, stranger:{tone:.6,depth:.55,warmth:.35},
-  // intense / fast
-  fire:{tone:.55,energy:.85,warmth:.5}, engine:{energy:.95,warmth:.35,tone:.55}, speed:{energy:.95,tone:.5}, chase:{energy:.9,tone:.6},
-  explosion:{energy:.95,tone:.6}, thunder:{energy:.8,tone:.6}, lightning:{energy:.85,tone:.55}, fight:{energy:.85,tone:.65,warmth:.35},
-  adrenaline:{energy:.95,tone:.55}, neon:{tone:.65,energy:.7,warmth:.35,depth:.45}, city:{tone:.55,energy:.7,depth:.5},
-  rush:{energy:.9,tone:.5}, heartbeat:{energy:.7,warmth:.6,tone:.5}, scream:{tone:.85,energy:.8,warmth:.2}, race:{energy:.95,tone:.5},
-  // calm / slow
-  still:{energy:.15,depth:.55}, quiet:{energy:.2,depth:.55,warmth:.5}, silence:{energy:.15,depth:.6,tone:.55},
-  calm:{energy:.2,warmth:.6,tone:.35}, snow:{energy:.25,tone:.45,warmth:.45,depth:.45}, mist:{energy:.25,tone:.55,depth:.6},
-  lake:{energy:.25,depth:.5,warmth:.5,tone:.4}, moon:{energy:.3,depth:.6,tone:.55,warmth:.45}, dusk:{energy:.3,depth:.55,tone:.5,warmth:.5},
-  stars:{energy:.3,depth:.7,warmth:.5,tone:.4}, drift:{energy:.2,depth:.6}, breath:{energy:.25,depth:.5,warmth:.55},
-  empty:{energy:.25,tone:.65,warmth:.25,depth:.6}, horizon:{energy:.4,depth:.7,warmth:.6,tone:.4}, sea:{energy:.4,depth:.6,tone:.45,warmth:.5},
-  ocean:{energy:.45,depth:.65,tone:.45}, desert:{energy:.4,depth:.6,tone:.55,warmth:.4},
-  // cerebral
-  mirror:{depth:.8,tone:.65,warmth:.4,energy:.4}, maze:{depth:.85,tone:.6,energy:.5}, riddle:{depth:.85,energy:.4},
-  puzzle:{depth:.85,energy:.45}, clock:{depth:.7,tone:.55,energy:.4}, time:{depth:.8,tone:.5,energy:.35}, infinity:{depth:.85,tone:.5},
-  dream:{depth:.75,tone:.5,warmth:.55,energy:.4}, memory:{depth:.75,warmth:.6,tone:.5}, mind:{depth:.8,energy:.4},
-  book:{depth:.7,energy:.3,warmth:.55}, library:{depth:.75,energy:.3,warmth:.55,tone:.4}, machine:{depth:.65,warmth:.25,tone:.55,energy:.55},
-  robot:{depth:.6,warmth:.25,tone:.5,energy:.55}, future:{depth:.75,tone:.5,energy:.55}, space:{depth:.8,tone:.55,energy:.45,warmth:.4},
-  chess:{depth:.8,energy:.4,warmth:.35}, code:{depth:.75,warmth:.3,energy:.45}, question:{depth:.8,energy:.35},
-  // cool / detached & objects & colors
-  steel:{warmth:.2,tone:.55,energy:.5}, glass:{warmth:.3,depth:.55,tone:.5}, chrome:{warmth:.2,tone:.55,energy:.5},
-  concrete:{warmth:.25,tone:.6,energy:.4}, suit:{warmth:.3,tone:.55,energy:.5}, money:{warmth:.3,tone:.6,energy:.55,depth:.4},
-  letter:{warmth:.8,depth:.6,energy:.3,tone:.4}, window:{depth:.55,warmth:.5,energy:.3,tone:.45}, road:{energy:.55,depth:.5,tone:.45,warmth:.5},
-  train:{energy:.5,depth:.55,warmth:.5,tone:.45}, photograph:{warmth:.65,depth:.6,tone:.45}, clouds:{energy:.3,depth:.5,warmth:.5,tone:.4},
-  red:{tone:.6,energy:.7,warmth:.5}, blue:{tone:.5,energy:.35,depth:.6,warmth:.45}, white:{tone:.35,warmth:.5,depth:.45},
-  silver:{warmth:.35,tone:.5,depth:.5}, green:{tone:.3,warmth:.6,energy:.4}, amber:{tone:.35,warmth:.75,energy:.4},
-  orange:{tone:.3,warmth:.7,energy:.55}, yellow:{tone:.2,warmth:.75,energy:.5}, purple:{tone:.5,depth:.6,warmth:.45},
-  crimson:{tone:.7,energy:.6,warmth:.45}, teal:{tone:.45,depth:.55,warmth:.45},
-};
-
-/* a second batch — widen coverage so more typed words move the dials */
-Object.assign(LEXICON, {
-  velvet:{warmth:.7,tone:.45,energy:.3,depth:.45}, honey:{warmth:.85,tone:.25,energy:.3}, wool:{warmth:.8,energy:.25},
-  lullaby:{warmth:.9,energy:.2,tone:.3}, porch:{warmth:.8,energy:.3,tone:.35}, harbor:{warmth:.6,energy:.3,depth:.5,tone:.45},
-  embrace:{warmth:.95,energy:.3}, reunion:{warmth:.85,depth:.5}, lantern:{warmth:.8,tone:.35,energy:.35},
-  // longing / melancholy
-  distance:{depth:.65,warmth:.5,tone:.5,energy:.3}, longing:{warmth:.6,depth:.65,tone:.55,energy:.3},
-  nostalgia:{warmth:.65,depth:.65,tone:.5}, ache:{warmth:.6,depth:.65,tone:.6}, rust:{tone:.65,depth:.55,warmth:.4,energy:.3},
-  faded:{tone:.55,depth:.55,warmth:.45,energy:.25}, hollow:{tone:.7,depth:.6,warmth:.25,energy:.25},
-  // appetite / body / heat
-  hunger:{tone:.6,energy:.6,depth:.5,warmth:.45}, fever:{tone:.7,energy:.7,warmth:.45,depth:.45},
-  appetite:{energy:.6,tone:.55,warmth:.5}, marrow:{tone:.65,depth:.6,warmth:.4}, salt:{tone:.5,depth:.5,warmth:.45,energy:.4},
-  thirst:{energy:.6,tone:.55,depth:.45}, bruise:{tone:.7,depth:.55,warmth:.4},
-  // motion / travel
-  compass:{depth:.6,energy:.45,warmth:.5,tone:.4}, highway:{energy:.6,depth:.5,tone:.5,warmth:.45},
-  flight:{energy:.6,depth:.6,tone:.45}, voyage:{depth:.6,energy:.5,warmth:.5}, map:{depth:.6,energy:.4,warmth:.45},
-  wheel:{energy:.7,tone:.5}, sail:{energy:.45,depth:.55,warmth:.55,tone:.4},
-  // texture / sound / signal
-  static:{tone:.7,depth:.6,warmth:.3,energy:.5}, echo:{depth:.65,tone:.55,warmth:.4,energy:.3}, signal:{depth:.6,energy:.5,tone:.5},
-  wire:{tone:.6,energy:.55,warmth:.3,depth:.45}, hum:{energy:.3,depth:.55,warmth:.45}, vinyl:{warmth:.7,depth:.5,energy:.4,tone:.4},
-  // sci / cosmic
-  gravity:{depth:.75,tone:.55,energy:.45}, orbit:{depth:.7,tone:.5,energy:.4}, comet:{depth:.65,energy:.55,tone:.5},
-  nebula:{depth:.7,warmth:.45,tone:.45}, celluloid:{depth:.6,warmth:.55,tone:.45,energy:.35},
-  // dark extras
-  venom:{tone:.85,energy:.6,warmth:.25}, gunsmoke:{tone:.75,energy:.65,warmth:.3}, frost:{tone:.55,warmth:.25,energy:.3,depth:.45},
-  thorn:{tone:.7,warmth:.35,depth:.45}, siren:{tone:.7,energy:.7,warmth:.35},
-  // bright extras
-  bloom:{tone:.25,warmth:.8,energy:.45,depth:.4}, citrus:{tone:.2,warmth:.7,energy:.55}, carousel:{tone:.3,warmth:.75,energy:.55},
-  confetti:{tone:.15,warmth:.8,energy:.7}, meadowlark:{tone:.2,warmth:.75,energy:.4},
-});
-
-/* normalize a typed word and look it up (handles caps, punctuation, trailing s) */
-function lookupLex(raw){
-  const w=(raw||"").toLowerCase().replace(/[^a-z]/g,"");
-  if(!w) return null;
-  if(LEXICON[w]) return LEXICON[w];
-  if(w.endsWith("s") && LEXICON[w.slice(0,-1)]) return LEXICON[w.slice(0,-1)];
-  return null;
-}
-
-const AXES = ["tone","energy","depth","warmth"];
-
-/* ============================================================
-   State + engine
-   ============================================================ */
-let state;
-function reset(){
-  const quiz = shuffle(QUIZ_BANK).slice(0,QUIZ_PICK).concat([instedQ(ERA_Q), instedQ(RUNTIME_Q), VETO_Q]);
-  const total = quiz.length + CUE_COUNT;
-  state = {
-    step:0,                                  // overall index through quiz+words
-    sums:{tone:0,energy:0,depth:0,warmth:0}, // weighted axis sums
-    wts: {tone:0,energy:0,depth:0,warmth:0}, // per-axis weight totals
-    words:[],                                // typed associations
-    quiz,                                    // this session's questions
-    total,                                   // scenes this session
-    cues:shuffle(CUE_POOL).slice(0,CUE_COUNT),     // this session's stimulus words
-    slugs:slugsForNow(total),                      // scene headings for the current time of day
-    closing:CLOSING_SLUGS[Math.floor(Math.random()*CLOSING_SLUGS.length)],
-    kwNames:[],                              // TMDB keywords your words resolved to
-    era:null,
-    runtime:null,                            // {gte,lte} minutes
-    veto:[],                                 // genre ids to exclude
-    ranked:[],                               // full ranked list for this pull
-    seen:new Set(),                          // films you've waved off this session
-    uv:null,                                 // the mood vector, kept for re-renders
-  };
-}
-
-function applyVec(v, weight){
-  const w = weight==null?1:weight;
-  for(const a of AXES){
-    if(v && v[a]!=null){ state.sums[a]+=v[a]*w; state.wts[a]+=w; }
-  }
-}
-function userVec(){
-  const out={};
-  for(const a of AXES) out[a] = state.wts[a]>0 ? state.sums[a]/state.wts[a] : 0.5;
-  return out;
-}
-function dist(a,b){
-  let s=0; for(const k of AXES){const d=a[k]-b[k]; s+=d*d;} return Math.sqrt(s);
-}
+/* ---------- helpers ---------- */
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+function instedQ(t){return Object.assign({},t,{q:t.qs?pick(t.qs):t.q});}
+function clamp01(x){return Math.max(0,Math.min(1,x));}
+function dist(a,b){let s=0;for(const k of AXES){const d=a[k]-b[k];s+=d*d;}return Math.sqrt(s);}
 function genreVec(ids){
   const sigs=(ids||[]).map(id=>GENRES[id]&&GENRES[id].sig).filter(Boolean);
-  if(!sigs.length) return {tone:.5,energy:.5,depth:.5,warmth:.5};
-  const out={tone:0,energy:0,depth:0,warmth:0};
-  for(const s of sigs) for(const a of AXES) out[a]+=s[a];
-  for(const a of AXES) out[a]/=sigs.length;
-  return out;
+  if(!sigs.length)return{tone:.5,energy:.5,depth:.5,warmth:.5};
+  const o={tone:0,energy:0,depth:0,warmth:0};
+  for(const s of sigs)for(const a of AXES)o[a]+=s[a];
+  for(const a of AXES)o[a]/=sigs.length; return o;
 }
+const yearOf=d=>(d||"").slice(0,4)||"—";
+const genreNames=ids=>(ids||[]).slice(0,3).map(id=>GENRES[id]&&GENRES[id].name).filter(Boolean);
 
-/* pick the genres whose signatures sit closest to the user's vibe */
-function pickGenres(uv, n){
-  return Object.keys(GENRES)
-    .map(id=>({id:+id, d:dist(uv, GENRES[id].sig)}))
-    .sort((a,b)=>a.d-b.d)
-    .slice(0,n)
-    .map(g=>g.id);
-}
-
-/* ============================================================
-   TMDB
-   ============================================================ */
-async function discover(uv, kws){
-  const cerebral = uv.depth>0.65;
-  const sort = cerebral ? "vote_average.desc" : "popularity.desc";
-  const voteFloor = cerebral ? 600 : 200;
-  const genres = pickGenres(uv, 3);
-  const page = 1 + Math.floor(Math.random()*2);
-
-  const base = ()=>{
-    const p=new URLSearchParams({api_key:TMDB_KEY,include_adult:"false",language:"en-US"});
-    if(state.era){
-      if(state.era.gte) p.set("primary_release_date.gte", state.era.gte);
-      if(state.era.lte) p.set("primary_release_date.lte", state.era.lte);
-    }
-    if(state.runtime){
-      if(state.runtime.gte) p.set("with_runtime.gte", String(state.runtime.gte));
-      if(state.runtime.lte) p.set("with_runtime.lte", String(state.runtime.lte));
-    }
-    if(state.veto && state.veto.length) p.set("without_genres", state.veto.join(","));
-    return p;
+/* ---------- safe on-device storage (localStorage w/ memory fallback) ---------- */
+const Store=(()=>{
+  let mem={}, ok=false;
+  try{ localStorage.setItem("__rr","1"); localStorage.removeItem("__rr"); ok=true; }catch(_){ ok=false; }
+  return {
+    persistent:ok,
+    get(k){ try{ return ok?localStorage.getItem(k):(k in mem?mem[k]:null); }catch(_){ return mem[k]||null; } },
+    set(k,v){ try{ ok?localStorage.setItem(k,v):(mem[k]=v); }catch(_){ mem[k]=v; } },
+    del(k){ try{ ok?localStorage.removeItem(k):(delete mem[k]); }catch(_){ delete mem[k]; } },
   };
+})();
+const PKEY="reelread.profile.v1";
+function blankProfile(){ return {seeds:[],dislikes:[],seen:[],axis:{tone:.5,energy:.5,depth:.5,warmth:.5},axisN:0,genres:{},created:Date.now()}; }
+function loadProfile(){ try{ const s=Store.get(PKEY); return s?JSON.parse(s):null; }catch(_){ return null; } }
+function saveProfile(){ try{ Store.set(PKEY,JSON.stringify(profile)); }catch(_){ } }
+function forgetProfile(){ Store.del(PKEY); profile=blankProfile(); }
 
-  // 1) mood pool — from the quiz + lexicon vector
-  const pm=base();
-  pm.set("sort_by",sort); pm.set("vote_count.gte",String(voteFloor));
-  pm.set("with_genres",genres.join("|")); pm.set("page",String(page));
-  let pool = await fetchPool(pm);
-
-  // 2) word pools — one query per keyword your words resolved to.
-  //    Tally how many of your words each film is tagged with: that count
-  //    is what actually lets the association game steer the result.
-  const kwHits=new Map();
-  const ids=(kws||[]).map(k=>k.id).slice(0,5);
-  if(ids.length){
-    const pools = await Promise.all(ids.map(id=>{
-      const pk=base();
-      pk.set("sort_by","popularity.desc"); pk.set("vote_count.gte","60");
-      pk.set("with_keywords",String(id)); pk.set("page","1");
-      return fetchPool(pk).catch(()=>[]);
-    }));
-    pools.forEach(films=>films.forEach(m=>kwHits.set(m.id,(kwHits.get(m.id)||0)+1)));
-    const have=new Set(pool.map(m=>m.id));
-    pools.flat().forEach(m=>{ if(!have.has(m.id)){ have.add(m.id); pool.push(m); } });
-  }
-
-  // 3) fallback if filters were too tight
-  if(pool.length < 6){
-    const pf=base();
-    pf.set("sort_by","popularity.desc"); pf.set("vote_count.gte","300"); pf.set("page","1");
-    pool = pool.concat(await fetchPool(pf));
-  }
-  return {pool, kwHits};
+function learnLike(film,weight){
+  if(!film||!film.id)return;
+  if(!profile.seeds.find(s=>s.id===film.id))
+    profile.seeds.push({id:film.id,title:film.title,poster_path:film.poster_path,genre_ids:film.genre_ids||[],release_date:film.release_date});
+  const v=genreVec(film.genre_ids), w=weight||1;
+  for(const a of AXES) profile.axis[a]=clamp01((profile.axis[a]*profile.axisN + v[a]*w)/(profile.axisN+w));
+  profile.axisN+=w;
+  (film.genre_ids||[]).forEach(g=>profile.genres[g]=(profile.genres[g]||0)+w);
 }
+function learnDislike(film){ if(film&&film.id&&!profile.dislikes.includes(film.id)) profile.dislikes.push(film.id); }
+function markSeen(film){ if(film&&film.id&&!profile.seen.includes(film.id)) profile.seen.push(film.id); }
 
-/* turn typed words into TMDB keywords (parallel, best-effort) */
-async function resolveKeywords(words){
-  const uniq=[...new Set((words||[]).map(w=>w.trim()).filter(Boolean))].slice(0,6);
-  const results = await Promise.all(uniq.map(async w=>{
-    try{
-      const r=await fetch(`${API}/search/keyword?api_key=${TMDB_KEY}&query=${encodeURIComponent(w)}`);
-      if(!r.ok) return null;
-      const d=await r.json();
-      if(!d.results || !d.results.length) return null;
-      const exact=d.results.find(k=>k.name && k.name.toLowerCase()===w.toLowerCase());
-      const k=exact||d.results[0];
-      return {id:k.id, name:k.name, word:w};
-    }catch(_){ return null; }
+/* ---------- TMDB ---------- */
+async function fetchJSON(url){ const r=await fetch(url); if(!r.ok) throw new Error("TMDB "+r.status); return r.json(); }
+async function fetchPool(url){ const d=await fetchJSON(url); return (d.results||[]).filter(m=>m.poster_path&&m.genre_ids); }
+
+const ONBOARD_GENRES=[18,35,28,878,27,10749,16,53,12,80];
+async function fetchGridFilms(){
+  const lists=await Promise.all(ONBOARD_GENRES.map(g=>{
+    const p=new URLSearchParams({api_key:TMDB_KEY,include_adult:"false",language:"en-US",sort_by:"vote_count.desc","vote_count.gte":"3000",with_genres:String(g),page:String(1+Math.floor(Math.random()*3))});
+    return fetchPool(`${API}/discover/movie?${p}`).catch(()=>[]);
   }));
-  const seen=new Set(); const out=[];
-  for(const k of results){ if(k && !seen.has(k.id)){ seen.add(k.id); out.push(k); } }
-  return out;
+  const seen=new Set(), out=[]; let idx=0, added=true;
+  while(out.length<36 && added){ added=false;
+    for(const list of lists){ const m=list[idx]; if(m&&!seen.has(m.id)){ seen.add(m.id); out.push(m); added=true; } }
+    idx++;
+  }
+  return shuffle(out).slice(0,30);
 }
-
-async function fetchPool(params){
-  const res = await fetch(`${API}/discover/movie?${params.toString()}`);
-  if(!res.ok) throw new Error("TMDB responded "+res.status);
-  const data = await res.json();
-  return (data.results||[]).filter(m=>m.poster_path && m.genre_ids);
+async function getRecommendations(id){
+  const d=await fetchJSON(`${API}/movie/${id}/recommendations?api_key=${TMDB_KEY}&language=en-US&page=1`).catch(()=>({results:[]}));
+  return (d.results||[]).filter(m=>m.poster_path&&m.genre_ids);
 }
-
-/* rank the live pool: mood distance, quality, and — heavily — how many
-   of your typed words each film is tagged with */
-function rank(pool, uv, kwHits){
-  const seen=new Set();
-  const scored = pool
-    .filter(m=>{ if(seen.has(m.id))return false; seen.add(m.id); return true; })
-    .map(m=>{
-      const mv = genreVec(m.genre_ids);
-      const vibe = dist(uv, mv);                       // 0..~2, lower = closer mood
-      const quality = (m.vote_average||0)/10;          // 0..1
-      const hits = kwHits ? (kwHits.get(m.id)||0) : 0; // how many of your words tagged it
-      const kwBonus = Math.min(hits,3)*0.30;           // strong: your words drive the result
-      const jitter = Math.random()*0.04;
-      const score = vibe - quality*0.15 - kwBonus + jitter; // lower is better
-      return {m, score};
-    })
-    .sort((a,b)=>a.score-b.score);
-  return scored.map(s=>s.m);
+const detailCache=new Map();
+async function getRuntime(id){
+  if(detailCache.has(id)) return detailCache.get(id);
+  try{ const d=await fetchJSON(`${API}/movie/${id}?api_key=${TMDB_KEY}`); const rt=typeof d.runtime==="number"?d.runtime:null; detailCache.set(id,rt); return rt; }
+  catch(_){ detailCache.set(id,null); return null; }
 }
-
-/* ============================================================
-   "Why this matched" copy
-   ============================================================ */
-const AXIS_PHRASE = {
-  tone:   {hi:"a darker streak",     lo:"something bright"},
-  energy: {hi:"momentum and pace",   lo:"a slow burn"},
-  depth:  {hi:"something to chew on", lo:"easy escape"},
-  warmth: {hi:"real heart",          lo:"a cool, detached edge"},
-};
-function whyText(uv){
-  const ranked = AXES
-    .map(a=>({a, pull:Math.abs(uv[a]-0.5), hi:uv[a]>=0.5}))
-    .sort((x,y)=>y.pull-x.pull);
-  const [first,second]=ranked;
-  const p1=AXIS_PHRASE[first.a][first.hi?"hi":"lo"];
-  const p2=AXIS_PHRASE[second.a][second.hi?"hi":"lo"];
-  const words=(state.words||[]).filter(Boolean).slice(0,3);
-  const lead = words.length
-    ? `Your words — ${words.map(w=>"<i>"+w+"</i>").join(", ")} — leaned toward `
-    : `You leaned toward `;
-  let out = `${lead}<b>${p1}</b> and <b>${p2}</b>.`;
-  const kw=(state.kwNames||[]).slice(0,3);
-  if(kw.length) out += `<span class="picked">Threads picked up: ${kw.join(" &middot; ")}</span>`;
-  return out;
+async function fetchExtras(id){
+  const region=((navigator.language||"en-US").split("-")[1]||"US").toUpperCase();
+  const [pv,vd]=await Promise.all([
+    fetch(`${API}/movie/${id}/watch/providers?api_key=${TMDB_KEY}`).then(r=>r.ok?r.json():null).catch(()=>null),
+    fetch(`${API}/movie/${id}/videos?api_key=${TMDB_KEY}`).then(r=>r.ok?r.json():null).catch(()=>null),
+  ]);
+  let providers=[],link=null;
+  if(pv&&pv.results){const reg=pv.results[region]||pv.results["US"]||null; if(reg){link=reg.link||null; providers=(reg.flatrate||[]).map(p=>p.provider_name);}}
+  let trailer=null;
+  if(vd&&vd.results){const t=vd.results.find(v=>v.site==="YouTube"&&v.type==="Trailer"&&v.official)||vd.results.find(v=>v.site==="YouTube"&&v.type==="Trailer")||vd.results.find(v=>v.site==="YouTube"); if(t)trailer=`https://www.youtube.com/watch?v=${t.key}`;}
+  return {providers,link,trailer};
+}
+async function searchMovie(name,year){
+  const p=new URLSearchParams({api_key:TMDB_KEY,language:"en-US",query:name,include_adult:"false"});
+  if(year) p.set("year",String(year));
+  const d=await fetchJSON(`${API}/search/movie?${p}`).catch(()=>({results:[]}));
+  return (d.results||[]).find(m=>m.poster_path&&m.genre_ids)||(d.results||[])[0]||null;
 }
 
 /* ============================================================
-   Rendering
+   Boot
    ============================================================ */
-const stage = document.getElementById("stage");
-/* total scenes is computed per session in reset() as state.total */
-const yearOf = d => (d||"").slice(0,4) || "—";
-const genreNames = ids => (ids||[]).slice(0,3).map(id=>GENRES[id]&&GENRES[id].name).filter(Boolean);
+let profile, ob, state;
+const stage=document.getElementById("stage");
 
-function scene(slug){
-  return `
-    <div class="sceneline">
-      <span class="slug">${slug}</span>
-      <span class="pageno">${state.step+1}.</span>
-    </div>`;
+function boot(){
+  profile=loadProfile();
+  if(profile && profile.seeds && profile.seeds.length){ renderHome(); }
+  else { profile=blankProfile(); renderWelcome(); }
 }
 
-function renderIntro(){
-  stage.innerHTML = `
+/* ============================================================
+   Onboarding — the taste layer
+   ============================================================ */
+function renderWelcome(){
+  stage.innerHTML=`
     <section class="screen title-page">
       <div class="fadein">Fade in:</div>
       <div class="center">
         <h1>Reel Read</h1>
-        <p class="by">written by<em>your own restless evening</em></p>
+        <p class="by">a screen test<em>let's find your taste</em></p>
       </div>
-      <p class="lede">A few questions, a few words off the top of your head, and the projector finds something for you. One sitting. No scrolling.</p>
-      <button class="btn" id="go">Begin the reading</button>
-      <div class="foot">
-        <p>Movie data &amp; posters from TMDB &mdash; not endorsed or certified by TMDB</p>
+      <p class="lede">Before tonight's pick, a quick read on what you love. Two minutes, mostly tapping. Then it remembers — so it only gets sharper.</p>
+      <button class="btn" id="go">Begin the screen test</button>
+      <div class="mini" style="display:flex;gap:18px;justify-content:center;margin-top:26px">
+        <button id="imp" style="background:none;border:none;color:var(--ink-faint);text-decoration:underline;text-underline-offset:3px;cursor:pointer;font-family:inherit;font-size:12px;letter-spacing:.08em">or import a Letterboxd / IMDb / Trakt CSV</button>
       </div>
+      <div class="foot"><p>Movie data &amp; posters from TMDB &mdash; not endorsed or certified by TMDB</p></div>
     </section>`;
-  document.getElementById("go").onclick=()=>{ reset(); next(); };
+  document.getElementById("go").onclick=startGrid;
+  document.getElementById("imp").onclick=renderImport;
 }
 
-function next(){
-  if(state.step < state.quiz.length) return renderQuestion(state.step);
-  if(state.step < state.total)       return renderAssociation(state.step - state.quiz.length);
-  return renderLoading();
+async function startGrid(){
+  stage.innerHTML=`<section class="screen loading"><p class="now">Pulling the contact sheet<span class="caret"></span></p></section>`;
+  try{
+    const films=await fetchGridFilms();
+    if(!films.length) throw new Error("empty");
+    ob={films, picked:new Set(), duelPool:films.slice()};
+    renderGrid();
+  }catch(err){ renderError(err,startGrid); }
 }
+
+function renderGrid(){
+  stage.innerHTML=`
+    <section class="screen">
+      <div class="sceneline"><span class="slug">INT. THE CASTING OFFICE — DAY</span><span class="pageno">1.</span></div>
+      <p class="lead">Tap the ones you love.</p>
+      <p class="sub">Pick at least three. Don't overthink it — gut reaction.</p>
+      <div class="grid" id="grid"></div>
+      <div class="grid-bar">
+        <span class="count" id="count">0 chosen</span>
+        <button class="btn" id="gnext" disabled style="opacity:.5">Continue</button>
+      </div>
+    </section>`;
+  const grid=document.getElementById("grid");
+  ob.films.forEach(f=>{
+    const b=document.createElement("button");
+    b.className="gtile"; b.type="button";
+    b.innerHTML=`<img src="${IMG_SM+f.poster_path}" alt="${f.title}" loading="lazy">`;
+    b.onclick=()=>{
+      if(ob.picked.has(f.id)){ ob.picked.delete(f.id); b.classList.remove("on"); }
+      else { ob.picked.add(f.id); b.classList.add("on"); }
+      const n=ob.picked.size;
+      document.getElementById("count").textContent=n+" chosen";
+      const nx=document.getElementById("gnext");
+      nx.disabled=n<3; nx.style.opacity=n<3?".5":"1";
+    };
+    grid.appendChild(b);
+  });
+  document.getElementById("gnext").onclick=()=>{
+    ob.films.filter(f=>ob.picked.has(f.id)).forEach(f=>learnLike(f,1.2));
+    ob.duelRound=0; ob.duelUsed=new Set(); ob.duelMax=6;
+    renderDuel();
+  };
+}
+
+function leastCertainAxis(){ let best=AXES[0],bd=1; for(const a of AXES){const d=Math.abs(profile.axis[a]-.5); if(d<bd){bd=d;best=a;}} return best; }
+function nextDuelPair(){
+  const a=leastCertainAxis();
+  const avail=ob.duelPool.filter(m=>!ob.duelUsed.has(m.id));
+  if(avail.length<2) return null;
+  const sorted=avail.map(m=>({m,v:genreVec(m.genre_ids)[a]})).sort((x,y)=>x.v-y.v);
+  return shuffle([sorted[0].m, sorted[sorted.length-1].m]);
+}
+function renderDuel(){
+  if(ob.duelRound>=ob.duelMax){ return renderTasteCard(); }
+  const pair=nextDuelPair();
+  if(!pair){ return renderTasteCard(); }
+  stage.innerHTML=`
+    <section class="screen">
+      <div class="sceneline"><span class="slug">INT. THE SCREENING ROOM — CONTINUOUS</span><span class="pageno">${ob.duelRound+2}.</span></div>
+      <p class="lead">Which one pulls you?</p>
+      <p class="sub">Round ${ob.duelRound+1} of ${ob.duelMax}. Trust the gut.</p>
+      <div class="duel" id="duel"></div>
+    </section>`;
+  const wrap=document.getElementById("duel");
+  pair.forEach(f=>{
+    const b=document.createElement("button");
+    b.className="duelcard"; b.type="button";
+    b.innerHTML=`<img src="${IMG_SM+f.poster_path}" alt="${f.title}" loading="lazy"><span class="dt">${f.title} <span style="color:var(--ink-faint)">${yearOf(f.release_date)}</span></span>`;
+    b.onclick=()=>{
+      learnLike(f,0.8);
+      pair.forEach(x=>ob.duelUsed.add(x.id));
+      ob.duelRound++; renderDuel();
+    };
+    wrap.appendChild(b);
+  });
+}
+
+function tasteSummary(){
+  const ax=profile.axis, parts=[];
+  parts.push(ax.warmth>=.55?"<b>warm, character-driven</b>":ax.warmth<=.45?"<b>cool and detached</b>":"<b>even-handed</b>");
+  parts.push(ax.tone>=.58?"with a <b>darker</b> streak":ax.tone<=.42?"on the <b>brighter</b> side":"balanced in tone");
+  parts.push(ax.energy>=.58?"and plenty of <b>momentum</b>":ax.energy<=.42?"and a <b>slow burn</b>":"at a steady clip");
+  if(ax.depth>=.6) parts.push("— and you like something <b>to chew on</b>");
+  const top=Object.entries(profile.genres).sort((a,b)=>b[1]-a[1]).slice(0,4).map(([g])=>GENRES[g]&&GENRES[g].name).filter(Boolean);
+  return {line:`You lean ${parts.join(", ")}.`, comfort:top};
+}
+function renderTasteCard(){
+  saveProfile();
+  const s=tasteSummary();
+  stage.innerHTML=`
+    <section class="screen">
+      <div class="sceneline"><span class="slug">INT. THE EDITING BAY — LATER</span><span class="pageno">—</span></div>
+      <div class="dossier">
+        <div class="label">Character study &mdash; the audience</div>
+        <p class="read">${s.line}</p>
+        ${s.comfort.length?`<div class="rowlabel">Comfort territory</div><div class="tags">${s.comfort.map(t=>`<span class="tag">${t}</span>`).join("")}</div>`:""}
+      </div>
+      <p class="sub" style="margin-top:20px">Looks right? I'll use this every time — and refine it as you react to picks.</p>
+      <div class="actions">
+        <button class="btn" id="cont">Find me something tonight</button>
+        <button class="btn ghost" id="redo">Start the test over</button>
+      </div>
+      ${Store.persistent?"":`<p class="obnote">Heads up: this browser is blocking saved memory, so it won't persist between visits here. It will once the app is opened from a real web address.</p>`}
+    </section>`;
+  document.getElementById("cont").onclick=startSession;
+  document.getElementById("redo").onclick=()=>{ profile=blankProfile(); renderWelcome(); };
+}
+
+/* ---------- CSV import ---------- */
+function renderImport(){
+  stage.innerHTML=`
+    <section class="screen">
+      <div class="sceneline"><span class="slug">INT. THE ARCHIVE — DAY</span><span class="pageno">—</span></div>
+      <p class="lead">Import the films you love.</p>
+      <p class="sub">Export your data from Letterboxd (Settings &rarr; Data), IMDb, or Trakt, and drop the CSV here. I'll read your watchlist or ratings and learn from them.</p>
+      <div class="actions">
+        <button class="btn filebtn" id="fbtn">Choose a CSV file<input type="file" id="file" accept=".csv,text/csv"></button>
+        <button class="btn ghost" id="back">Back</button>
+      </div>
+      <div class="import-status" id="istatus"></div>
+      <p class="import-note">Your file is read on your device only — nothing is uploaded anywhere. Titles are matched to TMDB to learn their genres.</p>
+    </section>`;
+  document.getElementById("back").onclick=()=> (profile.seeds.length?renderHome():renderWelcome());
+  document.getElementById("file").onchange=e=>{
+    const f=e.target.files && e.target.files[0];
+    if(f) importCSV(f);
+  };
+}
+function parseCSV(text){
+  const rows=[]; let row=[],cur="",q=false;
+  for(let i=0;i<text.length;i++){ const c=text[i];
+    if(q){ if(c==='"'){ if(text[i+1]==='"'){cur+='"';i++;} else q=false; } else cur+=c; }
+    else { if(c==='"')q=true; else if(c===","){row.push(cur);cur="";} else if(c==="\n"){row.push(cur);rows.push(row);row=[];cur="";} else if(c==="\r"){} else cur+=c; }
+  }
+  if(cur.length||row.length){ row.push(cur); rows.push(row); }
+  return rows;
+}
+async function importCSV(file){
+  const st=document.getElementById("istatus");
+  st.textContent="Reading file…";
+  let text; try{ text=await file.text(); }catch(_){ st.textContent="Couldn't read that file."; return; }
+  const rows=parseCSV(text).filter(r=>r.length>1);
+  if(!rows.length){ st.textContent="That file looks empty."; return; }
+  const head=rows[0].map(h=>h.trim().toLowerCase());
+  const ti=head.findIndex(h=>h==="name"||h==="title"||h==="original title");
+  const yi=head.findIndex(h=>h==="year");
+  if(ti<0){ st.textContent="Couldn't find a title column in that CSV."; return; }
+  const entries=rows.slice(1).map(r=>({name:(r[ti]||"").trim(), year:yi>=0?(r[yi]||"").trim():""})).filter(e=>e.name).slice(0,40);
+  if(!entries.length){ st.textContent="No film titles found."; return; }
+  let n=0;
+  for(let i=0;i<entries.length;i++){
+    st.textContent=`Matching ${i+1} of ${entries.length}…`;
+    const m=await searchMovie(entries[i].name, entries[i].year);
+    if(m){ learnLike(m,1.0); n++; }
+  }
+  saveProfile();
+  st.textContent=`Learned from ${n} films. Building your taste…`;
+  setTimeout(()=> n? renderHome() : (st.textContent="Couldn't match any titles — try the screen test instead."), 900);
+}
+
+/* ============================================================
+   Home (returning visits)
+   ============================================================ */
+function renderHome(){
+  const n=profile.seeds.length;
+  stage.innerHTML=`
+    <section class="screen home">
+      <div class="fadein">Fade in:</div>
+      <div class="center">
+        <p class="hi">Welcome back &middot; ${n} film${n===1?"":"s"} in your taste</p>
+        <h1>Reel Read</h1>
+        <div class="actions" style="justify-content:center;margin-top:34px">
+          <button class="btn" id="find">Find tonight's film</button>
+        </div>
+        <div class="mini">
+          <button id="refine">Refine my taste</button>
+          <button id="imp">Import more</button>
+          <button id="forget">Forget me</button>
+        </div>
+      </div>
+      <div class="foot"><p>Movie data &amp; posters from TMDB &mdash; not endorsed or certified by TMDB</p></div>
+    </section>`;
+  document.getElementById("find").onclick=startSession;
+  document.getElementById("imp").onclick=renderImport;
+  document.getElementById("refine").onclick=startGrid;
+  document.getElementById("forget").onclick=()=>{
+    if(confirm("Forget everything I've learned about your taste? This can't be undone.")){ forgetProfile(); renderWelcome(); }
+  };
+}
+
+/* ============================================================
+   Tonight's session (mood quiz -> taste-seeded engine)
+   ============================================================ */
+function startSession(){
+  const quiz=shuffle(QUIZ_BANK).slice(0,QUIZ_PICK).concat([instedQ(ERA_Q),instedQ(RUNTIME_Q),VETO_Q]);
+  const total=quiz.length;
+  state={ step:0, sums:{tone:0,energy:0,depth:0,warmth:0}, wts:{tone:0,energy:0,depth:0,warmth:0},
+    quiz, total, slugs:slugsForNow(total), closing:pick(CLOSING_SLUGS),
+    era:null, runtime:null, veto:[], uv:null, candidates:[], freq:new Map(), src:new Map(), sessionSeen:new Set() };
+  nextStep();
+}
+function applyVec(v,weight){ const w=weight==null?1:weight; for(const a of AXES){ if(v&&v[a]!=null){ state.sums[a]+=v[a]*w; state.wts[a]+=w; } } }
+function userVec(){ const o={}; for(const a of AXES) o[a]=state.wts[a]>0?state.sums[a]/state.wts[a]:0.5; return o; }
+function scene(slug){ return `<div class="sceneline"><span class="slug">${slug}</span><span class="pageno">${state.step+1}.</span></div>`; }
+function nextStep(){ if(state.step<state.quiz.length) return renderQuestion(state.step); return runLoading(); }
 
 function renderQuestion(qi){
   const Q=state.quiz[qi];
   if(Q.veto) return renderVeto(qi);
   const slug=state.slugs[state.step];
-  stage.innerHTML = `
+  stage.innerHTML=`
     <section class="screen">
       ${state.step===0?'<div class="fadein">Fade in:</div>':''}
       ${scene(slug)}
@@ -791,23 +721,14 @@ function renderQuestion(qi){
     </section>`;
   const wrap=document.getElementById("opts");
   shuffle(Q.opts).forEach(o=>{
-    const b=document.createElement("button");
-    b.className="opt"; b.type="button"; b.textContent=o.t;
-    b.onclick=()=>{
-      if(Q.era){ state.era=o.era; }
-      else if(Q.runtime){ state.runtime=o.rt; }
-      else { applyVec(o.v, o.w); }
-      state.step++; next();
-    };
+    const b=document.createElement("button"); b.className="opt"; b.type="button"; b.textContent=o.t;
+    b.onclick=()=>{ if(Q.era)state.era=o.era; else if(Q.runtime)state.runtime=o.rt; else applyVec(o.v,o.w); state.step++; nextStep(); };
     wrap.appendChild(b);
   });
 }
-
-/* multi-select scene: cross off genres you don't want tonight */
 function renderVeto(qi){
-  const slug=state.slugs[state.step];
-  const chosen=new Set();
-  stage.innerHTML = `
+  const slug=state.slugs[state.step]; const chosen=new Set();
+  stage.innerHTML=`
     <section class="screen">
       ${scene(slug)}
       <p class="action">${pick(VETO_PROMPTS)}</p>
@@ -817,250 +738,209 @@ function renderVeto(qi){
     </section>`;
   const wrap=document.getElementById("veto");
   shuffle(VETO_GENRES).forEach(([id,name])=>{
-    const b=document.createElement("button");
-    b.className="veto-chip"; b.type="button"; b.textContent=name;
-    b.onclick=()=>{
-      if(chosen.has(id)){ chosen.delete(id); b.classList.remove("on"); }
-      else { chosen.add(id); b.classList.add("on"); }
-    };
+    const b=document.createElement("button"); b.className="veto-chip"; b.type="button"; b.textContent=name;
+    b.onclick=()=>{ if(chosen.has(id)){chosen.delete(id);b.classList.remove("on");} else {chosen.add(id);b.classList.add("on");} };
     wrap.appendChild(b);
   });
-  const done=()=>{ state.veto=[...chosen]; state.step++; next(); };
-  document.getElementById("vgo").onclick=done;
-  document.getElementById("vskip").onclick=()=>{ state.veto=[]; state.step++; next(); };
+  document.getElementById("vgo").onclick=()=>{ state.veto=[...chosen]; state.step++; nextStep(); };
+  document.getElementById("vskip").onclick=()=>{ state.veto=[]; state.step++; nextStep(); };
 }
 
-function renderAssociation(ci){
-  const word=state.cues[ci];
-  const slug=state.slugs[state.step];
-  stage.innerHTML = `
-    <section class="screen">
-      ${scene(slug)}
-      <div class="assoc">
-        <div class="label">Word association &mdash; ${ci+1} of ${CUE_COUNT}</div>
-        <div class="stimulus">${word}<span class="caret"></span></div>
-        <div class="hint">type the first word that comes back</div>
-        <div class="wordin">
-          <span class="cue">&rsaquo;</span>
-          <input id="winput" type="text" inputmode="text" autocomplete="off"
-                 autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="" />
-          <button class="wgo" id="wgo" type="button" aria-label="Continue">&crarr;</button>
-        </div>
-        <div class="echo" id="echo"></div>
-        <button class="skip" id="skip" type="button">nothing comes &mdash; skip</button>
-      </div>
-    </section>`;
+function eraOK(m){ if(!state.era)return true; const y=+yearOf(m.release_date); if(!y)return false; if(state.era.gte&&y<+state.era.gte.slice(0,4))return false; if(state.era.lte&&y>+state.era.lte.slice(0,4))return false; return true; }
+function vetoOK(m){ if(!state.veto.length)return true; return !(m.genre_ids||[]).some(g=>state.veto.includes(g)); }
 
-  const input=document.getElementById("winput");
-  const echo=document.getElementById("echo");
-
-  input.addEventListener("input",()=>{
-    const hit=lookupLex(input.value);
-    echo.innerHTML = hit ? "&#10003; noted" : "";
-  });
-
-  const submit=()=>{
-    const w=input.value.trim();
-    if(w){
-      state.words.push(w);
-      const lx=lookupLex(w);
-      if(lx) applyVec(lx,1.1);   // typed words weigh a touch heavier than quiz options
-    }
-    state.step++; next();
-  };
-  document.getElementById("wgo").onclick=submit;
-  input.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); submit(); }});
-  document.getElementById("skip").onclick=()=>{ state.step++; next(); };
-
-  setTimeout(()=>input.focus(),60);
+async function discoverByMood(uv){
+  const genres=Object.keys(GENRES).map(id=>({id:+id,d:dist(uv,GENRES[id].sig)})).sort((a,b)=>a.d-b.d).slice(0,3).map(g=>g.id);
+  const p=new URLSearchParams({api_key:TMDB_KEY,include_adult:"false",language:"en-US",sort_by:"popularity.desc","vote_count.gte":"200",with_genres:genres.join("|"),page:String(1+Math.floor(Math.random()*2))});
+  if(state.era){ if(state.era.gte)p.set("primary_release_date.gte",state.era.gte); if(state.era.lte)p.set("primary_release_date.lte",state.era.lte); }
+  return fetchPool(`${API}/discover/movie?${p}`).catch(()=>[]);
 }
 
-const LOAD_LINES=["Casting","Scouting locations","Pulling the reel","Developing"];
-async function renderLoading(){
+const LOAD_LINES=["Reading your taste","Pulling reels people like you loved","Matching tonight's mood","Developing"];
+async function runLoading(){
   let li=0;
-  stage.innerHTML=`
-    <section class="screen loading">
-      <p class="now"><span id="ll">${LOAD_LINES[0]}</span><span class="caret"></span></p>
-    </section>`;
+  stage.innerHTML=`<section class="screen loading"><p class="now"><span id="ll">${LOAD_LINES[0]}</span><span class="caret"></span></p></section>`;
   const el=document.getElementById("ll");
-  const timer=setInterval(()=>{ li=(li+1)%LOAD_LINES.length; if(el)el.textContent=LOAD_LINES[li]; },720);
-
-  const uv=userVec();
-  state.uv=uv;
+  const timer=setInterval(()=>{li=(li+1)%LOAD_LINES.length; if(el)el.textContent=LOAD_LINES[li];},760);
+  const uv=userVec(); state.uv=uv;
   try{
-    const kws = await resolveKeywords(state.words);
-    state.kwNames = kws.map(k=>k.name);
-    const {pool, kwHits} = await discover(uv, kws);
-    if(!pool.length) throw new Error("No films came back from that combination.");
-    state.ranked = rank(pool, uv, kwHits).slice(0,40);
+    await buildCandidates(uv);
     clearInterval(timer);
+    if(!state.candidates.length) throw new Error("Nothing matched those filters — try loosening era or runtime.");
     renderResult();
-  }catch(err){
-    clearInterval(timer);
-    renderError(err);
+  }catch(err){ clearInterval(timer); renderError(err,runLoading); }
+}
+
+/* the taste-seeded engine */
+async function buildCandidates(uv){
+  const meta=new Map(), freq=new Map(), src=new Map();
+  const seeds=profile.seeds.slice(-12);
+  if(seeds.length){
+    const lists=await Promise.all(seeds.map(s=>getRecommendations(s.id).then(r=>({s,r})).catch(()=>({s,r:[]}))));
+    lists.forEach(({s,r})=>r.forEach(m=>{
+      meta.set(m.id,m);
+      freq.set(m.id,(freq.get(m.id)||0)+1);
+      if(!src.has(m.id))src.set(m.id,[]);
+      if(src.get(m.id).length<2 && s.title) src.get(m.id).push(s.title);
+    }));
   }
-}
-
-function posterEl(m, small){
-  if(m && m.poster_path) return `<img src="${(small?IMG_SM:IMG)+m.poster_path}" alt="${(m.title||"")} poster" loading="lazy">`;
-  return `<div class="poster empty">No poster</div>`;
-}
-
-/* films not yet waved off, best first */
-function currentPicks(){
-  return state.ranked.filter(m=>!state.seen.has(m.id)).slice(0,3);
-}
-
-/* TMDB watch providers (JustWatch) + a YouTube trailer for one film */
-async function fetchExtras(id){
-  const region = ((navigator.language||"en-US").split("-")[1] || "US").toUpperCase();
-  const [pv, vd] = await Promise.all([
-    fetch(`${API}/movie/${id}/watch/providers?api_key=${TMDB_KEY}`).then(r=>r.ok?r.json():null).catch(()=>null),
-    fetch(`${API}/movie/${id}/videos?api_key=${TMDB_KEY}`).then(r=>r.ok?r.json():null).catch(()=>null),
-  ]);
-  let providers=[], link=null;
-  if(pv && pv.results){
-    const reg = pv.results[region] || pv.results["US"] || null;
-    if(reg){ link = reg.link || null; providers = (reg.flatrate||[]).map(p=>p.provider_name); }
+  // supplement / cold-start with a mood discover pass
+  if(meta.size<15){
+    const disc=await discoverByMood(uv);
+    disc.forEach(m=>{ if(!meta.has(m.id)) meta.set(m.id,m); });
   }
-  let trailer=null;
-  if(vd && vd.results){
-    const t = vd.results.find(v=>v.site==="YouTube" && v.type==="Trailer" && v.official)
-           || vd.results.find(v=>v.site==="YouTube" && v.type==="Trailer")
-           || vd.results.find(v=>v.site==="YouTube");
-    if(t) trailer=`https://www.youtube.com/watch?v=${t.key}`;
-  }
-  return {providers, link, trailer};
+  const seedIds=new Set(profile.seeds.map(s=>s.id));
+  let pool=[...meta.values()].filter(m=>
+    !seedIds.has(m.id) && !profile.dislikes.includes(m.id) &&
+    !profile.seen.includes(m.id) && !state.sessionSeen.has(m.id) &&
+    eraOK(m) && vetoOK(m));
+  state.candidates=pool; state.freq=freq; state.src=src;
 }
 
-async function enrich(id){
-  const box=document.getElementById("extras");
-  if(!box) return;
-  try{
-    const x=await fetchExtras(id);
-    let html="";
-    if(x.providers.length){
-      const names=x.providers.slice(0,4).join(", ");
-      html += x.link
-        ? `<a class="extras-line" href="${x.link}" target="_blank" rel="noopener">&#9656; Streaming &mdash; ${names}</a>`
-        : `<span class="extras-line">&#9656; Streaming &mdash; ${names}</span>`;
-    } else if(x.link){
-      html += `<a class="extras-line" href="${x.link}" target="_blank" rel="noopener">&#9656; Rent or buy &mdash; see options</a>`;
-    } else {
-      html += `<span class="extras-line dim">&#9656; No streaming info for your region</span>`;
-    }
-    if(x.trailer) html += `<a class="extras-line" href="${x.trailer}" target="_blank" rel="noopener">&#9656; Watch the trailer</a>`;
-    html += `<span class="extras-attr">availability via JustWatch</span>`;
-    box.innerHTML=html;
-  }catch(_){
-    box.innerHTML=`<span class="extras-line dim">&#9656; Couldn't load availability</span>`;
-  }
+function rankNow(){
+  const uv=state.uv, p=profile;
+  return state.candidates
+    .filter(m=>!state.sessionSeen.has(m.id))
+    .map(m=>{
+      const mv=genreVec(m.genre_ids);
+      const mood=dist(uv,mv);                       // tonight
+      const taste=dist(p.axis,mv);                  // overall you
+      const fit=Math.min(state.freq.get(m.id)||0,3)*0.30; // recommended by many of your films
+      const quality=(m.vote_average||0)/10;
+      const jitter=Math.random()*0.04;
+      const score=mood*0.85 + taste*0.45 - fit - quality*0.12 + jitter;
+      return {m,score};
+    })
+    .sort((a,b)=>a.score-b.score)
+    .map(x=>x.m);
+}
+async function topWithRuntime(ranked){
+  if(!state.runtime) return ranked;
+  const top=ranked.slice(0,16);
+  const rts=await Promise.all(top.map(m=>getRuntime(m.id)));
+  const lo=state.runtime.gte||0, hi=state.runtime.lte||100000;
+  const okIds=new Set(); top.forEach((m,i)=>{ const r=rts[i]; if(r==null||(r>=lo&&r<=hi)) okIds.add(m.id); });
+  const filtered=ranked.filter(m=>okIds.has(m.id));
+  return filtered.length>=3 ? filtered : ranked;
 }
 
-function sharePick(film){
-  const year=yearOf(film.release_date);
-  const url=`https://www.themoviedb.org/movie/${film.id}`;
-  const text=`Reel Read picked ${film.title} (${year}) for me tonight.`;
-  if(navigator.share){
-    navigator.share({title:film.title, text, url}).catch(()=>{});
-  } else if(navigator.clipboard){
-    navigator.clipboard.writeText(`${text} ${url}`).then(()=>{
-      const b=document.getElementById("share");
-      if(b){ b.textContent="Copied"; setTimeout(()=>{ if(b) b.textContent="Share"; },1500); }
-    }).catch(()=>{});
-  }
-}
+/* ============================================================
+   Result + warmer/colder
+   ============================================================ */
+function posterEl(m,small){ if(m&&m.poster_path) return `<img src="${(small?IMG_SM:IMG)+m.poster_path}" alt="${(m.title||"")} poster" loading="lazy">`; return `<div class="poster empty">No poster</div>`; }
 
-function renderResult(){
+function whyText(film){
   const uv=state.uv;
-  const picks=currentPicks();
-  if(!picks.length) return renderLoading();   // ran out — pull a fresh batch
-  const top=picks[0];
-  const alts=picks.slice(1);
+  const sources=(state.src.get(film.id)||[]);
+  const ax=AXES.map(a=>({a,pull:Math.abs(uv[a]-0.5),hi:uv[a]>=0.5})).sort((x,y)=>y.pull-x.pull)[0];
+  const moodWord={tone:ax.hi?"something darker":"something brighter",energy:ax.hi?"momentum":"a slow burn",depth:ax.hi?"something to chew on":"easy escape",warmth:ax.hi?"real heart":"a cooler edge"}[ax.a];
+  if(sources.length) return `Because you loved <i>${sources.join("</i> and <i>")}</i> — and tonight you wanted <b>${moodWord}</b>.`;
+  return `Tonight you wanted <b>${moodWord}</b>, and this fits your taste.`;
+}
+
+async function renderResult(){
+  const ranked=await topWithRuntime(rankNow());
+  const picks=ranked.slice(0,3);
+  if(!picks.length){ return renderError(new Error("Out of matches — try New search."),()=>renderHome()); }
+  const top=picks[0], alts=picks.slice(1);
   const gnames=genreNames(top.genre_ids);
-  const overview=(top.overview||"").length>240 ? top.overview.slice(0,240).trim()+"…" : (top.overview||"");
-  const rating = top.vote_average ? top.vote_average.toFixed(1) : null;
+  const overview=(top.overview||"").length>240?top.overview.slice(0,240).trim()+"…":(top.overview||"");
+  const rating=top.vote_average?top.vote_average.toFixed(1):null;
 
   stage.innerHTML=`
     <section class="screen result">
       <div class="trans">Fade out.</div>
-      <div class="sceneline">
-        <span class="slug">${state.closing}</span>
-        <span class="pageno">&mdash;</span>
-      </div>
+      <div class="sceneline"><span class="slug">${state.closing}</span><span class="pageno">&mdash;</span></div>
       <p class="action">The clerk slides one across the counter.</p>
       <div class="feature">
         <div class="poster">${posterEl(top)}</div>
         <div>
           <h2>${top.title||"Untitled"}</h2>
-          <div class="filmmeta">
-            ${yearOf(top.release_date)}
-            ${rating?` &middot; <span class="star">&#9733; ${rating}</span>`:""}
-            ${gnames.length?` &middot; ${gnames.join(", ")}`:""}
-          </div>
-          <p class="why">${whyText(uv)}</p>
+          <div class="filmmeta">${yearOf(top.release_date)}${rating?` &middot; <span class="star">&#9733; ${rating}</span>`:""}${gnames.length?` &middot; ${gnames.join(", ")}`:""}</div>
+          <p class="why">${whyText(top)}</p>
           ${overview?`<p class="overview">${overview}</p>`:""}
           <div class="extras" id="extras"><span class="extras-load">Checking where to watch&hellip;</span></div>
         </div>
       </div>
 
-      ${alts.length?`
-      <div class="alts">
-        <h3>Also considered</h3>
-        <div class="alt-row" id="altrow"></div>
-      </div>`:""}
-
-      <div class="actions">
-        <button class="btn ghost" id="seen">Seen it &mdash; next</button>
-        <button class="btn ghost" id="share">Share</button>
-      </div>
-      <div class="actions">
-        <button class="btn" id="again">Another take</button>
-        <button class="btn ghost" id="restart">New draft</button>
+      <div class="reactions">
+        <div class="rlabel">Not quite? Steer it.</div>
+        <div class="react-row">
+          <button class="react" data-r="dark">Too dark</button>
+          <button class="react" data-r="light">Want lighter</button>
+          <button class="react" data-r="slow">Too slow</button>
+          <button class="react" data-r="seen">Seen it</button>
+          <button class="react" data-r="no">Not my thing</button>
+          <button class="react love" data-r="love">Love it &mdash; remember this</button>
+        </div>
       </div>
 
-      <div class="foot">
-        <div class="end">The End</div>
-        <p>Data &amp; posters from TMDB &mdash; not endorsed or certified by TMDB</p>
+      ${alts.length?`<div class="alts"><h3>Also in the running</h3><div class="alt-row" id="altrow"></div></div>`:""}
+
+      <div class="actions">
+        <button class="btn" id="again">Another pull</button>
+        <button class="btn ghost" id="home">Home</button>
       </div>
+      <div class="foot"><div class="end">The End</div><p>Data &amp; posters from TMDB &mdash; not endorsed or certified by TMDB</p></div>
     </section>`;
 
   if(alts.length){
     const row=document.getElementById("altrow");
     alts.forEach(a=>{
-      const card=document.createElement("button");
-      card.className="alt"; card.type="button";
-      card.innerHTML=`${posterEl(a,true)}<span><span class="at">${a.title||"Untitled"}</span><span class="ay">${yearOf(a.release_date)}</span></span>`;
-      card.onclick=()=>{ // promote this alternate to the headline pick
-        state.ranked=[a, ...state.ranked.filter(m=>m.id!==a.id)];
-        renderResult();
-        window.scrollTo({top:0,behavior:"smooth"});
-      };
-      row.appendChild(card);
+      const c=document.createElement("button"); c.className="alt"; c.type="button";
+      c.innerHTML=`${posterEl(a,true)}<span><span class="at">${a.title||"Untitled"}</span><span class="ay">${yearOf(a.release_date)}</span></span>`;
+      c.onclick=()=>{ state.candidates=[a,...state.candidates.filter(m=>m.id!==a.id)]; state.freq.set(a.id,(state.freq.get(a.id)||0)+5); renderResult(); window.scrollTo({top:0,behavior:"smooth"}); };
+      row.appendChild(c);
     });
   }
 
-  document.getElementById("seen").onclick=()=>{ state.seen.add(top.id); renderResult(); window.scrollTo({top:0,behavior:"smooth"}); };
-  document.getElementById("share").onclick=()=>sharePick(top);
-  document.getElementById("again").onclick=()=>renderLoading();
-  document.getElementById("restart").onclick=()=>{ reset(); renderIntro(); };
+  stage.querySelectorAll(".react").forEach(btn=>{
+    btn.onclick=()=>react(btn.getAttribute("data-r"), top);
+  });
+  document.getElementById("again").onclick=()=>runLoading();
+  document.getElementById("home").onclick=()=>renderHome();
 
-  enrich(top.id); // fill in streaming + trailer
+  enrich(top.id);
 }
 
-function renderError(err){
+function react(kind, film){
+  const nudge=(a,d)=>{ state.uv[a]=clamp01(state.uv[a]+d); };
+  if(kind==="dark") nudge("tone",-0.18);
+  else if(kind==="light"){ nudge("tone",-0.18); nudge("warmth",+0.12); }
+  else if(kind==="slow") nudge("energy",+0.20);
+  if(kind==="seen"){ state.sessionSeen.add(film.id); markSeen(film); saveProfile(); }
+  else if(kind==="no"){ state.sessionSeen.add(film.id); learnDislike(film); saveProfile(); }
+  else if(kind==="love"){ learnLike(film,1.5); markSeen(film); state.sessionSeen.add(film.id); saveProfile(); }
+  renderResult(); window.scrollTo({top:0,behavior:"smooth"});
+}
+
+async function enrich(id){
+  const box=document.getElementById("extras"); if(!box)return;
+  try{
+    const x=await fetchExtras(id); let html="";
+    if(x.providers.length){ const names=x.providers.slice(0,4).join(", ");
+      html+=x.link?`<a class="extras-line" href="${x.link}" target="_blank" rel="noopener">&#9656; Streaming &mdash; ${names}</a>`:`<span class="extras-line">&#9656; Streaming &mdash; ${names}</span>`;
+    } else if(x.link){ html+=`<a class="extras-line" href="${x.link}" target="_blank" rel="noopener">&#9656; Rent or buy &mdash; see options</a>`; }
+    else { html+=`<span class="extras-line dim">&#9656; No streaming info for your region</span>`; }
+    if(x.trailer) html+=`<a class="extras-line" href="${x.trailer}" target="_blank" rel="noopener">&#9656; Watch the trailer</a>`;
+    html+=`<span class="extras-attr">availability via JustWatch</span>`;
+    box.innerHTML=html;
+  }catch(_){ box.innerHTML=`<span class="extras-line dim">&#9656; Couldn't load availability</span>`; }
+}
+
+function renderError(err,retry){
   stage.innerHTML=`
     <section class="screen err">
       <h2>The reel jammed.</h2>
-      <p>Couldn't reach the movie database. ${err&&err.message?("("+err.message+")"):""} If you're viewing this inside a preview window, download the file and open it directly in your browser &mdash; that usually clears it.</p>
-      <button class="btn" id="retry">Thread it again</button>
+      <p>Couldn't reach the movie database. ${err&&err.message?("("+err.message+")"):""} If you're in a preview window, download the file and open it directly in Safari &mdash; that usually clears it.</p>
+      <button class="btn" id="retry">Try again</button>
     </section>`;
-  document.getElementById("retry").onclick=()=>renderLoading();
+  document.getElementById("retry").onclick=()=> (retry?retry():boot());
 }
 
 /* go */
-reset();
-renderIntro();
+boot();
+
 </script>
 </body>
 </html>
